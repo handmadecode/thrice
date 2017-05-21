@@ -1,0 +1,66 @@
+/*
+ * Gradle script for the Thrice project
+ */
+apply plugin: 'org.myire.quill.all'
+
+
+buildscript
+{
+    // Use Maven central for plugins.
+    repositories
+    {
+        mavenCentral()
+    }
+
+    // This script uses the Quill plugins.
+    dependencies
+    {
+        classpath 'org.myire:quill:1.3'
+    }
+}
+
+
+// Load project meta data and version from the files in the meta data directory, and set the
+// project's group and version from the loaded values.
+projectMetaData.from('meta/project-meta.json').applyGroupToProject()
+semanticVersion.from('meta/version.json').applyLongVersionToProject()
+
+
+// Load dependencies from the external file.
+apply from: 'dependencies.gradle'
+
+
+// Use Maven central to retrieve dependencies.
+repositories.mavenCentral()
+
+
+// Configure all Jar tasks to add a build info section to the manifest.
+tasks.withType(Jar)
+{
+    manifest.addBuildInfoSection()
+}
+
+
+// Configure the main jar to add a package section to the manifest.
+jar.manifest
+{
+    addPackageSection()
+}
+
+
+// Add static data from the pom template and remove test dependencies when the pom file is created.
+createPom.from(file('meta/pom-template.xml')).withoutScope('test')
+
+
+// Ignore all methods annotated with 'Unreachable' when analysing test code coverage.
+cobertura.ignoreMethodAnnotations += "org.myire.annotation.Unreachable"
+
+
+// Configure project specific exclusion/suppressions/filter files for the static analysis tasks.
+findbugs.excludeFilter = file('gradle/findbugs_excludes.xml')
+checkstyle.configProperties.put('suppressions.file', file('gradle/checkstyle_suppressions.xml'))
+pmdMain.filter.file = 'gradle/pmd_filter.xml'
+
+
+// Disable code quality analysis of the test sources.
+[findbugs, checkstyle, pmd, jdepend]*.disableTestChecks()

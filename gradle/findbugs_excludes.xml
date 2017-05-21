@@ -1,0 +1,6 @@
+<FindBugsFilter>
+  <Match class="org.myire.util.Strings">
+    <BugCode name="ES" />
+    <Method name="equalsIgnoreCaseOrBothNull"/>
+  </Match>
+</FindBugsFilter>

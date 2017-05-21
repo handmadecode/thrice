@@ -1,0 +1,4 @@
+<rule-violation-filters>
+  <rule-violation-filter lines="125" rules="CompareObjectsWithEquals" files=".*util/Strings.java"/>
+  <rule-violation-filter lines="102" rules="ConsecutiveLiteralAppends" files=".*util/Strings.java"/>
+</rule-violation-filters>

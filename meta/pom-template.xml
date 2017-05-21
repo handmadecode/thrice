@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<project>
+  <name>Thrice</name>
+  <description>Java classes that have come in handy three times or more</description>
+  <url>https://github.com/handmadecode/thrice</url>
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <name>Peter Franzen</name>
+      <email>peter@myire.org</email>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:https://github.com/handmadecode/thrice.git</connection>
+    <developerConnection>scm:git:https://github.com/handmadecode/thrice.git</developerConnection>
+    <url>https://github.com/handmadecode/thrice</url>
+  </scm>
+</project>

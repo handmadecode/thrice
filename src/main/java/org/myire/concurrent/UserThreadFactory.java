@@ -1,0 +1,56 @@
+/*
+ * Copyright 2010 Peter Franzen. All rights reserved.
+ *
+ * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
+ */
+package org.myire.concurrent;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+
+
+/**
+ * Extension of {@code DefaultThreadFactory} that creates threads according to the same semantics as
+ * the superclass with the exception that all created threads are user threads.
+ *
+ * @author <a href="mailto:peter@myire.org">Peter Franzen</a>
+ */
+@Immutable
+public class UserThreadFactory extends DefaultThreadFactory
+{
+    /**
+     * Create a new {@code UserThreadFactory}.
+     *
+     * @param pBaseName             The base name for all created threads.
+     * @param pAppendThreadNumber   If true, the thread number will be appended to the base thread
+     *                              name prefix. If false, the thread names will consist only of the
+     *                              base name. The thread number is a sequential number assigned to
+     *                              each created thread, starting with 1.
+     *
+     * @throws NullPointerException if {@code pBaseName} is null.
+     */
+    public UserThreadFactory(@Nonnull String pBaseName, boolean pAppendThreadNumber)
+    {
+        super(pBaseName, pAppendThreadNumber);
+    }
+
+
+    /**
+     * Create a new user thread.
+     *
+     * @param pTarget   The runnable be executed by the thread.
+     *
+     * @return  A new user thread, never null.
+     */
+    @Override
+    @Nonnull
+    public Thread newThread(@Nullable Runnable pTarget)
+    {
+        Thread aThread = super.newThread(pTarget);
+        if (aThread.isDaemon())
+            aThread.setDaemon(false);
+
+        return aThread;
+    }
+}

@@ -1,0 +1,7 @@
+{
+    "shortName": "Thrice",
+    "longName": "Thrice",
+    "group": "org.myire",
+    "description": "A collection of Java utility classes" ,
+    "mainPackage" : "org/myire/thrice/"
+}
