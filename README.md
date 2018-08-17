@@ -15,16 +15,23 @@ occasions.
 
 ## Release Notes
 
+### version 3.1
+
+* Thrice is packaged as a modular jar file. The classes in the jar file are still targeted for
+Java 8.
+
 ### version 3.0
 
-* First official release. Previous versions were semi-official and not generally available. 
+* First official release. Previous versions were semi-official and not generally available.
 
 
 ## Documentation
 
 ### Building
 
-Thrice must be built with JDK 8 or later. The command
+Thrice must be built with JDK 9 or later (but the classes are targeted for Java 8).
+
+The command
 
     ./gradlew build
 
@@ -32,9 +39,12 @@ or an equivalent should do the trick.
 
 ### Using
 
-It's all in the JavaDocs. 
+Thrice requires Java 8 or later. The library is packaged in a modular jar file that contains the 
+module `org.myire.thrice`, which exports all packages in the project and requires no other modules.
+
+The rest is in the JavaDocs.
 
 
 ## Availability
 
-Thrice can be found at Maven Central with the group ID `org.myire` and the artifact ID `thrice`. 
+Thrice can be found at Maven Central with the group ID `org.myire` and the artifact ID `thrice`.
