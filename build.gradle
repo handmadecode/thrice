@@ -1,7 +1,8 @@
 /*
  * Gradle script for the Thrice project
  */
-apply plugin: 'org.myire.quill.all'
+apply plugin: 'org.myire.quill.core'
+apply plugin: 'org.myire.quill.moduleinfo'
 
 
 buildscript
@@ -15,9 +16,14 @@ buildscript
     // This script uses the Quill plugins.
     dependencies
     {
-        classpath 'org.myire:quill:1.3'
+        classpath 'org.myire:quill:1.5'
     }
 }
+
+
+// Build for compatibility with Java 8
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
 
 
 // Load project meta data and version from the files in the meta data directory, and set the
@@ -50,6 +56,10 @@ jar.manifest
 
 // Add static data from the pom template and remove test dependencies when the pom file is created.
 createPom.from(file('meta/pom-template.xml')).withoutScope('test')
+
+
+// Specify the JavaDoc html version to avoid warnings (only valid when building with JDK > 9).
+javadoc.options.addBooleanOption('html4', true)
 
 
 // Ignore all methods annotated with 'Unreachable' when analysing test code coverage.
