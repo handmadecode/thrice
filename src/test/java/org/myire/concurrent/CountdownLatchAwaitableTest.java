@@ -1,11 +1,12 @@
 /*
- * Copyright 2017 Peter Franzen. All rights reserved.
+ * Copyright 2017, 2020 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.myire.concurrent;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.function.BiConsumer;
 
 
 /**
@@ -17,9 +18,9 @@ import java.util.concurrent.CountDownLatch;
 public class CountdownLatchAwaitableTest extends AwaitableTest
 {
     @Override
-    public void setup()
+    protected void createAwaitableAndConditionSetter(BiConsumer<Awaitable, Runnable> pDestination)
     {
         CountDownLatch aLatch = new CountDownLatch(1);
-        setup(Awaitables.wrap(aLatch), aLatch::countDown);
+        pDestination.accept(Awaitables.wrap(aLatch), aLatch::countDown);
     }
 }

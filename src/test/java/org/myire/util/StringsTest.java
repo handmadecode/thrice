@@ -1,14 +1,16 @@
 /*
- * Copyright 2006, 2008-2009, 2016 Peter Franzen. All rights reserved.
+ * Copyright 2006, 2008-2009, 2016, 2020 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.myire.util;
 
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 /**
@@ -90,8 +92,10 @@ public class StringsTest
         byte[] aBytes = {(byte) 0x35, (byte) 0x64, (byte) 0x99, (byte) 0x03, (byte) 0xbb};
 
         // Then
-        assertEquals("0x99 0x03 0xbb", Strings.bytesToHexString(aBytes, 2, 3));
-        assertEquals("0x64 0x99", Strings.bytesToHexString(aBytes, 1, 2));
+        assertAll(
+            () -> assertEquals("0x99 0x03 0xbb", Strings.bytesToHexString(aBytes, 2, 3)),
+            () -> assertEquals("0x64 0x99", Strings.bytesToHexString(aBytes, 1, 2))
+        );
     }
 
 
@@ -151,11 +155,14 @@ public class StringsTest
      * The {@code bytesToHexString} method should throw a {@code NullPointerException} for a null
      * array.
      */
-    @Test(expected=NullPointerException.class)
+    @Test
     public void bytesToHexStringThrowsForNullArray()
     {
-        // When
-        Strings.bytesToHexString(null);
+        assertThrows(
+            NullPointerException.class,
+            () ->
+                Strings.bytesToHexString(null)
+        );
     }
 
 
@@ -163,11 +170,14 @@ public class StringsTest
      * The {@code bytesToHexString} method should throw a {@code NullPointerException} for a null
      * subarray.
      */
-    @Test(expected=NullPointerException.class)
+    @Test
     public void bytesToHexStringThrowsForNullSubArray()
     {
-        // When
-        Strings.bytesToHexString(null, 0, 1);
+        assertThrows(
+            NullPointerException.class,
+            () ->
+                Strings.bytesToHexString(null, 0, 1)
+        );
     }
 
 
@@ -175,11 +185,14 @@ public class StringsTest
      * The {@code bytesToHexString} method should throw an {@code IndexOutOfBoundsException} for a
      * negative offset.
      */
-    @Test(expected=IndexOutOfBoundsException.class)
+    @Test
     public void bytesToHexStringThrowsForNegativeOffset()
     {
-        // When
-        Strings.bytesToHexString(new byte[5], -1, 4);
+        assertThrows(
+            IndexOutOfBoundsException.class,
+            () ->
+                Strings.bytesToHexString(new byte[5], -1, 4)
+        );
     }
 
 
@@ -187,11 +200,14 @@ public class StringsTest
      * The {@code bytesToHexString} method should throw an {@code IndexOutOfBoundsException} when
      * the offset plus length is too large.
      */
-    @Test(expected=IndexOutOfBoundsException.class)
+    @Test
     public void bytesToHexStringThrowsForTooLargeLength()
     {
-        // When
-        Strings.bytesToHexString(new byte[32], 29, 4);
+        assertThrows(
+            IndexOutOfBoundsException.class,
+            () ->
+                Strings.bytesToHexString(new byte[32], 29, 4)
+        );
     }
 
 
@@ -199,11 +215,14 @@ public class StringsTest
      * The {@code bytesToHexString} method should throw a {@code NegativeArraySizeException} for a
      * negative length.
      */
-    @Test(expected=NegativeArraySizeException.class)
+    @Test
     public void bytesToHexStringThrowsForNegativeLength()
     {
-        // When
-        Strings.bytesToHexString(new byte[256], 3, -5);
+        assertThrows(
+            NegativeArraySizeException.class,
+            () ->
+                Strings.bytesToHexString(new byte[256], 3, -5)
+        );
     }
 
 
@@ -225,8 +244,10 @@ public class StringsTest
     @Test
     public void equalsIgnoreCaseOrBothNullReturnsFalseForOneNullString()
     {
-        assertFalse(Strings.equalsIgnoreCaseOrBothNull("", null));
-        assertFalse(Strings.equalsIgnoreCaseOrBothNull(null, "x"));
+        assertAll(
+            () -> assertFalse(Strings.equalsIgnoreCaseOrBothNull("", null)),
+            () -> assertFalse(Strings.equalsIgnoreCaseOrBothNull(null, "x"))
+        );
     }
 
 
@@ -365,6 +386,7 @@ public class StringsTest
      * The {@code asString} method should return the object's string representation when passed a
      * non-null object.
      */
+    @SuppressWarnings("boxing")
     @Test
     public void asStringReturnsObjectStringForNonnullObject()
     {
@@ -380,9 +402,13 @@ public class StringsTest
      * The {@code asString} method should throw a {@code NullPointerException} when passed both a
      * null object and a null default value.
      */
-    @Test(expected=NullPointerException.class)
+    @Test
     public void asStringThrowsForNullDefaultValue()
     {
-        Strings.asString(null, null);
+        assertThrows(
+            NullPointerException.class,
+            () ->
+                Strings.asString(null, null)
+        );
     }
 }

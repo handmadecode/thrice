@@ -1,17 +1,19 @@
 /*
- * Copyright 2017 Peter Franzen. All rights reserved.
+ * Copyright 2017, 2020 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.myire.concurrent;
 
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 /**
@@ -26,17 +28,27 @@ public abstract class AwaitableTest
 
 
     /**
-     * Call {@link #setup(Awaitable, Runnable)} with the instance to test.
+     * Call {@link #createAwaitableAndConditionSetter(BiConsumer)} to let the subclass create the
+     * instance to test and the setter of the awaited condition.
      */
-    @Before
-    abstract public void setup();
+    @BeforeEach
+    public void createAwaitableAndConditionSetter()
+    {
+        createAwaitableAndConditionSetter(
+            (pAwaitable, pSetConditionAction) ->
+            {
+                fAwaitable = pAwaitable;
+                fSetConditionAction = pSetConditionAction;
+            }
+        );
+    }
 
 
     /**
      * Release any blocking call to {@code await()} by setting the condition that the
      * {@code Awaitable} waits for.
      */
-    @After
+    @AfterEach
     public void releaseAwait()
     {
         if (fSetConditionAction != null)
@@ -45,20 +57,12 @@ public abstract class AwaitableTest
 
 
     /**
-     * Set the {@code Awaitable} to test and a {@code Runnable} with a {@code run()} method that
+     * Create the {@code Awaitable} to test and a {@code Runnable} with a {@code run()} method that
      * will set the condition that the {@code Awaitable} is waiting to true.
-     *<p>
-     * This method must be called by the subclasses before executing a test.
      *
-     * @param pAwaitable            The instance to test.
-     * @param pSetConditionAction   The action to invoke to set the condition that the instance to
-     *                              test is waiting for to true.
+     * @param pDestination  Where to pass the two created instances.
      */
-    protected void setup(Awaitable pAwaitable, Runnable pSetConditionAction)
-    {
-        fAwaitable = pAwaitable;
-        fSetConditionAction = pSetConditionAction;
-    }
+    abstract protected void createAwaitableAndConditionSetter(BiConsumer<Awaitable, Runnable> pDestination);
 
 
     /**
@@ -162,8 +166,10 @@ public abstract class AwaitableTest
         // Then (the await() call should have returned true and the thread have terminated without
         // having been interrupted)
         assertTrue(aAction.timedJoin(2, TimeUnit.SECONDS));
-        assertTrue(aAction.returnedTrue());
-        assertFalse(aAction.wasInterrupted());
+        assertAll(
+            () -> assertTrue(aAction.returnedTrue()),
+            () -> assertFalse(aAction.wasInterrupted())
+        );
     }
 
 
@@ -183,8 +189,10 @@ public abstract class AwaitableTest
 
         // Then (the await() call should have returned false and the thread have terminated without
         // having been interrupted)
-        assertFalse(aAction.returnedTrue());
-        assertFalse(aAction.wasInterrupted());
+        assertAll(
+            () -> assertFalse(aAction.returnedTrue()),
+            () -> assertFalse(aAction.wasInterrupted())
+        );
     }
 
 
@@ -205,8 +213,10 @@ public abstract class AwaitableTest
         // Then (the await() call should have returned true immediately and the thread have
         // terminated without having been interrupted)
         assertTrue(aAction.timedJoin(2, TimeUnit.SECONDS));
-        assertTrue(aAction.returnedTrue());
-        assertFalse(aAction.wasInterrupted());
+        assertAll(
+            () -> assertTrue(aAction.returnedTrue()),
+            () -> assertFalse(aAction.wasInterrupted())
+        );
     }
 
 
@@ -226,8 +236,10 @@ public abstract class AwaitableTest
         // Then (the await() call should have returned false and the thread have terminated without
         // having been interrupted)
         assertTrue(aAction.timedJoin(10, TimeUnit.MILLISECONDS));
-        assertFalse(aAction.returnedTrue());
-        assertFalse(aAction.wasInterrupted());
+        assertAll(
+            () -> assertFalse(aAction.returnedTrue()),
+            () -> assertFalse(aAction.wasInterrupted())
+        );
     }
 
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Peter Franzen. All rights reserved.
+ * Copyright 2016-2017, 2020 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -9,10 +9,11 @@ import java.security.Permission;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 /**
@@ -60,8 +61,10 @@ abstract public class AbstractDefaultThreadFactoryTest
         Thread aThread2 = aFactory.newThread(null);
 
         // Then
-        assertEquals(aBaseName, aThread1.getName());
-        assertEquals(aBaseName, aThread2.getName());
+        assertAll(
+            () -> assertEquals(aBaseName, aThread1.getName()),
+            () -> assertEquals(aBaseName, aThread2.getName())
+        );
     }
 
 
@@ -81,8 +84,10 @@ abstract public class AbstractDefaultThreadFactoryTest
         Thread aThread2 = aFactory.newThread(null);
 
         // Then
-        assertEquals(aBaseName + "1", aThread1.getName());
-        assertEquals(aBaseName + "2", aThread2.getName());
+        assertAll(
+            () -> assertEquals(aBaseName + "1", aThread1.getName()),
+            () -> assertEquals(aBaseName + "2", aThread2.getName())
+        );
     }
 
 
@@ -244,7 +249,7 @@ abstract public class AbstractDefaultThreadFactoryTest
         @Override
         public void run()
         {
-            fCreatedThread = fThreadFactory.newThread(null);
+            fCreatedThread = fThreadFactory.newThread(() -> {});
         }
 
         void startAndJoin() throws InterruptedException

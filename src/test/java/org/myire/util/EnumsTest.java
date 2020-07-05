@@ -1,13 +1,14 @@
 /*
- * Copyright 2010-2011 Peter Franzen. All rights reserved.
+ * Copyright 2010-2011, 2020 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.myire.util;
 
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.myire.util.Enums.toEnum;
 
@@ -33,10 +34,14 @@ public class EnumsTest
      * The {@code toEnum()} method should throw a {@code NullPointerException } when passed a null
      * enum class.
      */
-    @Test(expected=NullPointerException.class)
-    public void toEnumThrowsforNullEnumClass()
+    @Test
+    public void toEnumThrowsForNullEnumClass()
     {
-        toEnum("", null);
+        assertThrows(
+            NullPointerException.class,
+            () ->
+                toEnum("", null)
+        );
     }
 
 

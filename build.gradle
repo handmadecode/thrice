@@ -46,6 +46,10 @@ jar.manifest
 createPom.from(file('meta/pom-template.xml')).withoutScope('test')
 
 
+// Run tests with JUnit 5.
+test.useJUnitPlatform()
+
+
 // Specify the JavaDoc html version to avoid warnings when building with JDK 9 or 10.
 javadoc.options.addBooleanOption('html5', true)
 

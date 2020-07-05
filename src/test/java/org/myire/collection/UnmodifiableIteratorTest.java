@@ -1,5 +1,5 @@
 /*
- * Copyright 2009, 2016-2017 Peter Franzen. All rights reserved.
+ * Copyright 2009, 2016-2017, 2020 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -11,11 +11,11 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
-import org.junit.Test;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -37,10 +37,14 @@ public class UnmodifiableIteratorTest
      * {@code NullPointerException} when passed a null argument.
      */
     @SuppressWarnings("unused")
-    @Test(expected=NullPointerException.class)
+    @Test
     public void factoryMethodThrowsForNullArgument()
     {
-        unmodifiableIterator(null);
+        assertThrows(
+            NullPointerException.class,
+            () ->
+                unmodifiableIterator(null)
+        );
     }
 
 
@@ -127,17 +131,11 @@ public class UnmodifiableIteratorTest
         for (int i=0; i< aStrings.length; i++)
             aIterator.next();
 
-        // Then (can't use @Test(expected=NoSuchElementException.class) since that would potentially
-        // hide unexpected exceptions thrown in the calls to next() above.
-        try
-        {
-            aIterator.next();
-            fail("next() does not throw when all elements have been retrieved");
-        }
-        catch (NoSuchElementException expected)
-        {
-            // Expected
-        }
+        // Then
+        assertThrows(
+            NoSuchElementException.class,
+            aIterator::next
+        );
     }
 
 
@@ -145,14 +143,17 @@ public class UnmodifiableIteratorTest
      * The {@code next} method should throw a {@code NoSuchElementException} at any point for an
      * empty iterable
      */
-    @Test(expected=NoSuchElementException.class)
+    @Test
     public void nextThrowsForEmptyIterable()
     {
         // Given
         Iterator<String> aIterator = unmodifiableIterator(Collections.emptyIterator());
 
-        // When
-        aIterator.next();
+        // Then
+        assertThrows(
+            NoSuchElementException.class,
+            aIterator::next
+        );
     }
 
 
@@ -171,16 +172,11 @@ public class UnmodifiableIteratorTest
         {
             aIterator.next();
 
-            try
-            {
-                // When
-                aIterator.remove();
-                fail("remove() does not throw");
-            }
-            catch (UnsupportedOperationException expected)
-            {
-                // Then (expected exception)
-            }
+            // Then
+            assertThrows(
+                UnsupportedOperationException.class,
+                aIterator::remove
+            );
         }
     }
 
@@ -189,15 +185,18 @@ public class UnmodifiableIteratorTest
      * The {@code remove} method should throw an {@code UnsupportedOperationException} at the start
      * of the iteration.
      */
-    @Test(expected=UnsupportedOperationException.class)
+    @Test
     public void removeThrowsAtStartOfIteration()
     {
         // Given
         String[] aStrings = {"a", "b", "c"};
         Iterator<String> aIterator = unmodifiableIterator(Arrays.asList(aStrings).iterator());
 
-        // When
-        aIterator.remove();
+        // Then
+        assertThrows(
+            UnsupportedOperationException.class,
+            aIterator::remove
+        );
     }
 
 
@@ -205,7 +204,7 @@ public class UnmodifiableIteratorTest
      * The {@code remove} method should throw an {@code UnsupportedOperationException} at the end of
      * the iteration.
      */
-    @Test(expected=UnsupportedOperationException.class)
+    @Test
     public void removeThrowsAtEndOfIteration()
     {
         // Given
@@ -214,8 +213,11 @@ public class UnmodifiableIteratorTest
         for (int i=0; i< aStrings.length; i++)
             aIterator.next();
 
-        // When
-        aIterator.remove();
+        // Then
+        assertThrows(
+            UnsupportedOperationException.class,
+            aIterator::remove
+        );
     }
 
 

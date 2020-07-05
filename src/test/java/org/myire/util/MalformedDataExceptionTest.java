@@ -1,14 +1,15 @@
 /*
- * Copyright 2009 Peter Franzen. All rights reserved.
+ * Copyright 2009, 2020 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.myire.util;
 
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 
 /**
@@ -32,8 +33,10 @@ public class MalformedDataExceptionTest
         MalformedDataException aException = new MalformedDataException(aMessage);
 
         // Then
-        assertEquals(aMessage, aException.getMessage());
-        assertNull(aException.getCause());
+        assertAll(
+            () -> assertEquals(aMessage, aException.getMessage()),
+            () -> assertNull(aException.getCause())
+        );
     }
 
 
@@ -70,7 +73,9 @@ public class MalformedDataExceptionTest
         MalformedDataException aException = new MalformedDataException(aMessage, aCause);
 
         // Then
-        assertEquals(aMessage, aException.getMessage());
-        assertSame(aCause, aException.getCause());
+        assertAll(
+            () -> assertEquals(aMessage, aException.getMessage()),
+            () -> assertSame(aCause, aException.getCause())
+        );
     }
 }

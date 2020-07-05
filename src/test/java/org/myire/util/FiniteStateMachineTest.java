@@ -1,5 +1,5 @@
 /*
- * Copyright 2009, 2016 Peter Franzen. All rights reserved.
+ * Copyright 2009, 2016, 2020 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -7,9 +7,10 @@ package org.myire.util;
 
 import java.util.function.BiFunction;
 
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 /**
@@ -22,8 +23,8 @@ public class FiniteStateMachineTest
     private enum State { STATE1, STATE2, STATE3, STATE4 }
     private enum Input { INPUT1, INPUT2, INPUT3 }
 
-    static private BiFunction<State, Input, State> IDENTITY_NEXT_FN = (s, i) -> s;
-    static private BiFunction<State, Input, Object> NULL_OUT_FN = (s, i) -> null;
+    static private final BiFunction<State, Input, State> IDENTITY_NEXT_FN = (s, i) -> s;
+    static private final BiFunction<State, Input, Object> NULL_OUT_FN = (s, i) -> null;
 
 
     /**
@@ -31,10 +32,14 @@ public class FiniteStateMachineTest
      * argument.
      */
     @SuppressWarnings("unused")
-    @Test(expected=NullPointerException.class)
+    @Test
     public void ctorThrowsForNullNextFunction()
     {
-        new FiniteStateMachine<>(State.STATE1, null, NULL_OUT_FN);
+        assertThrows(
+            NullPointerException.class,
+            () ->
+                new FiniteStateMachine<>(State.STATE1, null, NULL_OUT_FN)
+        );
     }
 
 
@@ -43,10 +48,14 @@ public class FiniteStateMachineTest
      * argument.
      */
     @SuppressWarnings("unused")
-    @Test(expected=NullPointerException.class)
+    @Test
     public void ctorThrowsForNullOutputFunction()
     {
-        new FiniteStateMachine<>(State.STATE2, IDENTITY_NEXT_FN, null);
+        assertThrows(
+            NullPointerException.class,
+            () ->
+                new FiniteStateMachine<>(State.STATE2, IDENTITY_NEXT_FN, null)
+        );
     }
 
 
@@ -133,6 +142,7 @@ public class FiniteStateMachineTest
      * An input sequence fed to {@code consumeAndEmit} method should perform the expected
      * transitions and return the expected output.
      */
+    @SuppressWarnings("boxing")
     @Test
     public void inputSequenceGeneratesTheExpectedTransitionsAndOutput()
     {
@@ -196,6 +206,7 @@ public class FiniteStateMachineTest
         }
     }
 
+    @SuppressWarnings("boxing")
     static private Integer mod3OutputFunction(Modulo3State pState, Modulo3Input pInput)
     {
         switch (pInput)

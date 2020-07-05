@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Peter Franzen. All rights reserved.
+ * Copyright 2017, 2020 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -7,9 +7,11 @@ package org.myire.concurrent;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
+import java.util.function.BiConsumer;
 
-import org.junit.Test;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 /**
@@ -30,13 +32,13 @@ public class TaskRunnerAwaitableTest extends AwaitableTest
 
 
     @Override
-    public void setup()
+    protected void createAwaitableAndConditionSetter(BiConsumer<Awaitable, Runnable> pDestination)
     {
         try
         {
             // Start the task and wait for the execution thread to call run().
             if (fTaskRunner.startTask().await(10, TimeUnit.SECONDS))
-                setup(fTaskRunner, this::terminate);
+                pDestination.accept(fTaskRunner, this::terminate);
             else
                 // Execution thread not started within 10 seconds, fail the test.
                 throw new AssertionError("TaskRunner not started within 10 seconds");
