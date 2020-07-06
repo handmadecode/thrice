@@ -1,5 +1,5 @@
 /*
- * Copyright 2009, 2012, 2017 Peter Franzen. All rights reserved.
+ * Copyright 2009, 2012, 2017, 2020 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -20,6 +20,13 @@ import org.myire.annotation.Unreachable;
  */
 public final class Numbers
 {
+    // The positive ints that consist only of the digit '9'. The last element is Integer.MAX_VALUE.
+    static private final int[] INT_NINES_ONLY = createIntNinesArray();
+
+    // The positive longs that consist only of the digit '9'. The last element is Long.MAX_VALUE.
+    static private final long[] LONG_NINES_ONLY = createLongNinesArray();
+
+
     /**
      * Private constructor to disallow instantiations of utility method class.
      */
@@ -218,5 +225,102 @@ public final class Numbers
         // Hacker's Delight 2-4
         long aMask = pValue >> 63;
         return (aMask ^ pValue) - aMask;
+    }
+
+
+    /**
+     * Get the number of digits in a positive 32-bit value.
+     *
+     * @param pValue    The value.
+     *
+     * @return  The number of digits in {@code pValue}. If {@code pValue} is negative the value 1
+     *          is returned.
+     */
+    static public int countDigits(int pValue)
+    {
+        int aNumDigits = 0;
+        while (true)
+        {
+            if (pValue <= INT_NINES_ONLY[aNumDigits++])
+                return aNumDigits;
+        }
+    }
+
+
+    /**
+     * Get the number of digits in a positive 64-bit value.
+     *
+     * @param pValue    The value.
+     *
+     * @return  The number of digits in {@code pValue}. If {@code pValue} is negative the value 1
+     *          is returned.
+     */
+    static public int countDigits(long pValue)
+    {
+        int aNumDigits = 0;
+        while (true)
+        {
+            if (pValue <= LONG_NINES_ONLY[aNumDigits++])
+                return aNumDigits;
+        }
+    }
+
+
+    /**
+     * Create an array of all positive 32-bit integer values having only the digit '9'.
+     *
+     * @return  An array with the values 9, 99, 999, etc. The last element will be
+     *          {@code Integer.MAX_VALUE}.
+     */
+    @Nonnull
+    static private int[] createIntNinesArray()
+    {
+        // Element n in the array will have the value 10^^(n+1) - 1, e.g.
+        // element 0 will have the value 10^^1 - 1 == 9
+        // element 2 will have the value 10^^3 - 1 == 999
+        // The largest power of 10 that fits into an int is the integral part of the 10-logarithm of
+        // Integer.MAX_VALUE:
+        //   n = (int) log10(Integer.MAX_VALUE) ---> 10^^n <= Integer.MAX_VALUE < 10^^(n+1)
+        int aLargestPower = (int) Math.log10(Integer.MAX_VALUE);
+        // Allocate room for all nines-only integers and Integer.MAX_VALUE.
+        int[] aNines = new int[aLargestPower + 1];
+        int aPower10 = 10; // 10^^1
+        for (int i=0; i<aLargestPower; i++)
+        {
+            aNines[i] = aPower10 - 1;
+            aPower10 *= 10;
+        }
+
+        aNines[aNines.length - 1] = Integer.MAX_VALUE;
+        return aNines;
+    }
+
+
+    /**
+     * Create an array of all positive 64-bit integer values having only the digit '9'.
+     *
+     * @return  An array with the values 9L, 99L, 999L, etc. The last element will be
+     *          {@code Long.MAX_VALUE}.
+     */
+    static private long[] createLongNinesArray()
+    {
+        // Element n in the array will have the value 10^^(n+1) - 1, e.g.
+        // element 0 will have the value 10^^1 - 1 == 9
+        // element 2 will have the value 10^^3 - 1 == 999
+        // The largest power of 10 that fits into a long is the integral part of the 10-logarithm of
+        // Long.MAX_VALUE:
+        //   n = (int) log10(Long.MAX_VALUE) ---> 10^^n <= Long.MAX_VALUE < 10^^(n+1)
+        int aLargestPower = (int) Math.log10(Long.MAX_VALUE);
+        // Allocate room for all nines-only long integers and Long.MAX_VALUE.
+        long[] aNines = new long[aLargestPower + 1];
+        long aPower10 = 10; // 10^^1
+        for (int i=0; i<aLargestPower; i++)
+        {
+            aNines[i] = aPower10 - 1;
+            aPower10 *= 10L;
+        }
+
+        aNines[aNines.length - 1] = Long.MAX_VALUE;
+        return aNines;
     }
 }

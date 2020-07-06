@@ -453,6 +453,72 @@ public class NumbersTest
     }
 
 
+    @Test
+    public void countIntDigitsProducesTheCorrectResultForPositiveValues()
+    {
+        for (int i=0; i<65536; i++)
+            countIntDigitsProducesTheCorrectResultForPositiveValue(i);
+        for (int i=0; i<100; i++)
+            countIntDigitsProducesTheCorrectResultForPositiveValue(
+                ThreadLocalRandom.current().nextInt(0, Integer.MAX_VALUE));
+
+        countIntDigitsProducesTheCorrectResultForPositiveValue(Integer.MAX_VALUE);
+    }
+
+
+    static private void countIntDigitsProducesTheCorrectResultForPositiveValue(int pValue)
+    {
+        assertEquals(String.valueOf(pValue).length(), Numbers.countDigits(pValue));
+    }
+
+
+    /**
+     * The {@code countDigits} method should return {@code 1} for negative integer values.
+     */
+    @Test
+    public void countIntDigitsProducesTheCorrectResultForNegativeValues()
+    {
+        assertAll(
+            () -> assertEquals(1, Numbers.countDigits(-1)),
+            () -> assertEquals(1, Numbers.countDigits(-4711)),
+            () -> assertEquals(1, Numbers.countDigits(Integer.MIN_VALUE))
+        );
+    }
+
+
+    @Test
+    public void countLongDigitsProducesTheCorrectResultForPositiveValues()
+    {
+        for (long i=0; i<65536; i++)
+            countLongDigitsProducesTheCorrectResultForPositiveValue(i);
+        for (int i=0; i<100; i++)
+            countLongDigitsProducesTheCorrectResultForPositiveValue(
+                ThreadLocalRandom.current().nextLong(0, Long.MAX_VALUE));
+
+        countLongDigitsProducesTheCorrectResultForPositiveValue(Long.MAX_VALUE);
+    }
+
+
+    static private void countLongDigitsProducesTheCorrectResultForPositiveValue(long pValue)
+    {
+        assertEquals(String.valueOf(pValue).length(), Numbers.countDigits(pValue));
+    }
+
+
+    /**
+     * The {@code countDigits} method should return {@code 1} for negative long values.
+     */
+    @Test
+    public void countLongDigitsProducesTheCorrectResultForNegativeValues()
+    {
+        assertAll(
+            () -> assertEquals(1, Numbers.countDigits(-1L)),
+            () -> assertEquals(1, Numbers.countDigits(-4711L)),
+            () -> assertEquals(1, Numbers.countDigits(Long.MIN_VALUE))
+        );
+    }
+
+
     static private int randomPositiveInt()
     {
         return ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE);
