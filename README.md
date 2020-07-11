@@ -15,6 +15,11 @@ occasions.
 
 ## Release Notes
 
+### version 3.2
+
+* `Numbers.countDigits()` added.
+* Build related tools and libraries upgraded to the latest versions.
+
 ### version 3.1
 
 * Thrice is packaged as a modular jar file. The classes in the jar file are still targeted for
