@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, 2015, 2017 Peter Franzen. All rights reserved.
+ * Copyright 2013, 2015, 2017, 2020 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -11,10 +11,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -42,10 +43,14 @@ public class SequencesTest
      * The sequence returned by {@code Sequences.emptySequence()} should throw an
      * {@code IndexOutOfBoundsException} when {@code elementAt(0)} is called.
      */
-    @Test(expected=IndexOutOfBoundsException.class)
+    @Test
     public void emptySequenceThrowsForElementAtIndex0()
     {
-        Sequences.emptySequence().elementAt(0);
+        assertThrows(
+            IndexOutOfBoundsException.class,
+            () ->
+                Sequences.emptySequence().elementAt(0)
+        );
     }
 
 
@@ -53,10 +58,14 @@ public class SequencesTest
      * The sequence returned by {@code Sequences.emptySequence()} should throw an
      * {@code IndexOutOfBoundsException} when {@code elementAt()} is called with a positive index.
      */
-    @Test(expected=IndexOutOfBoundsException.class)
+    @Test
     public void emptySequenceThrowsForElementAtPositiveIndex()
     {
-        Sequences.emptySequence().elementAt(1);
+        assertThrows(
+            IndexOutOfBoundsException.class,
+            () ->
+                Sequences.emptySequence().elementAt(1)
+        );
     }
 
 
@@ -64,10 +73,14 @@ public class SequencesTest
      * The sequence returned by {@code Sequences.emptySequence()} should throw an
      * {@code IndexOutOfBoundsException} when {@code elementAt()} is called with a negative index.
      */
-    @Test(expected=IndexOutOfBoundsException.class)
+    @Test
     public void emptySequenceThrowsForElementAtNegativeIndex()
     {
-        Sequences.emptySequence().elementAt(-1);
+        assertThrows(
+            IndexOutOfBoundsException.class,
+            () ->
+                Sequences.emptySequence().elementAt(-1)
+        );
     }
 
 
@@ -149,10 +162,14 @@ public class SequencesTest
      * A sequence returned by {@code Sequences.singleton()} should throw an
      * {@code IndexOutOfBoundsException} when {@code elementAt()} is called with a positive index.
      */
-    @Test(expected=IndexOutOfBoundsException.class)
+    @Test
     public void singletonSequenceThrowsForElementAtPositiveIndex()
     {
-        Sequences.singleton("").elementAt(1);
+        assertThrows(
+            IndexOutOfBoundsException.class,
+            () ->
+                Sequences.singleton("").elementAt(1)
+        );
     }
 
 
@@ -160,10 +177,14 @@ public class SequencesTest
      * A sequence returned by {@code Sequences.singleton()} should throw an
      * {@code IndexOutOfBoundsException} when {@code elementAt()} is called with a negative index.
      */
-    @Test(expected=IndexOutOfBoundsException.class)
+    @Test
     public void singletonSequenceThrowsForElementAtNegativeIndex()
     {
-        Sequences.singleton("").elementAt(-1);
+        assertThrows(
+            IndexOutOfBoundsException.class,
+            () ->
+                Sequences.singleton("").elementAt(-1)
+        );
     }
 
 
@@ -171,14 +192,18 @@ public class SequencesTest
      * Calling {@code Sequences.wrap(List)} should throw a {@code NullPointerException} when passed
      * {@code null} as argument.
      */
-    @Test(expected=NullPointerException.class)
+    @Test
     public void wrapNullListThrows()
     {
         // Given
         List<?> aList = null;
 
         // When
-        Sequences.wrap(aList);
+        assertThrows(
+            NullPointerException.class,
+            () ->
+                Sequences.wrap(aList)
+        );
     }
 
 
@@ -258,14 +283,18 @@ public class SequencesTest
      * A sequence wrapping a list should throw an {@code IndexOutOfBoundsException} when
      * {@code elementAt()} is called with a negative index.
      */
-    @Test(expected=IndexOutOfBoundsException.class)
+    @Test
     public void wrappedListSequenceThrowsForElementAtNegativeIndex()
     {
         // Given
         List<Object> aList = Arrays.asList(new Object(), new Object(), new Object());
 
         // When
-        Sequences.wrap(aList).elementAt(-2);
+        assertThrows(
+            IndexOutOfBoundsException.class,
+            () ->
+                Sequences.wrap(aList).elementAt(-2)
+        );
     }
 
 
@@ -273,14 +302,18 @@ public class SequencesTest
      * A sequence wrapping a list should throw an {@code IndexOutOfBoundsException} when
      * {@code elementAt()} is called with a too large index.
      */
-    @Test(expected=IndexOutOfBoundsException.class)
+    @Test
     public void wrappedListSequenceThrowsForElementAtTooLargeIndex()
     {
         // Given
         List<Object> aList = Arrays.asList(new Object(), new Object());
 
         // When
-        Sequences.wrap(aList).elementAt(aList.size());
+        assertThrows(
+            IndexOutOfBoundsException.class,
+            () ->
+                Sequences.wrap(aList).elementAt(aList.size())
+        );
     }
 
 
@@ -288,14 +321,18 @@ public class SequencesTest
      * Calling {@code Sequences.wrap(T[])} should throw a {@code NullPointerException} when passed
      * {@code null} as argument.
      */
-    @Test(expected=NullPointerException.class)
+    @Test
     public void wrapNullArrayThrows()
     {
         // Given
         Object[] aArray = null;
 
         // When
-        Sequences.wrap(aArray);
+        assertThrows(
+            NullPointerException.class,
+            () ->
+                Sequences.wrap(aArray)
+        );
     }
 
 
@@ -374,14 +411,18 @@ public class SequencesTest
      * A sequence wrapping an array should throw an {@code IndexOutOfBoundsException} when
      * {@code elementAt()} is called with a negative index.
      */
-    @Test(expected=IndexOutOfBoundsException.class)
+    @Test
     public void wrappedArraySequenceThrowsForElementAtNegativeIndex()
     {
         // Given
         Object[] aArray = {new Object(),new Object()};
 
         // When
-        Sequences.wrap(aArray).elementAt(-5);
+        assertThrows(
+            IndexOutOfBoundsException.class,
+            () ->
+                Sequences.wrap(aArray).elementAt(-5)
+        );
     }
 
 
@@ -389,14 +430,18 @@ public class SequencesTest
      * A sequence wrapping an array should throw an {@code IndexOutOfBoundsException} when
      * {@code elementAt()} is called with a too large index.
      */
-    @Test(expected=IndexOutOfBoundsException.class)
+    @Test
     public void wrappedArraySequenceThrowsForTooLargeIndex()
     {
         // Given
         Object[] aArray = {new Object(), new Object(), new Object()};
 
         // When
-        Sequences.wrap(aArray).elementAt(aArray.length);
+        assertThrows(
+            IndexOutOfBoundsException.class,
+            () ->
+                Sequences.wrap(aArray).elementAt(aArray.length)
+        );
     }
 
 

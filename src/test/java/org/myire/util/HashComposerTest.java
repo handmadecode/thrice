@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Peter Franzen. All rights reserved.
+ * Copyright 2016, 2020 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -7,8 +7,9 @@ package org.myire.util;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 /**
@@ -27,6 +28,22 @@ abstract public class HashComposerTest
 
 
     /**
+     * The {@code initialValue()} method should return the same value on multiple invocations.
+     */
+    @Test
+    public void initialValueIsInvariant()
+    {
+        // Given
+        HashComposer aHashComposer = getInstance();
+
+        // Then
+        assertEquals(
+            aHashComposer.initialValue(),
+            aHashComposer.initialValue());
+    }
+
+
+    /**
      * The {@code update(boolean)} method should return the same value on multiple invocations with
      * the same hash code and boolean value.
      */
@@ -38,8 +55,16 @@ abstract public class HashComposerTest
         int aHashCode = rndHashCode();
 
         // Then
-        assertEquals(aHashComposer.update(aHashCode, false), aHashComposer.update(aHashCode, false));
-        assertEquals(aHashComposer.update(aHashCode, true), aHashComposer.update(aHashCode, true));
+        assertAll(
+            () ->
+                assertEquals(
+                    aHashComposer.update(aHashCode, false),
+                    aHashComposer.update(aHashCode, false)),
+            () ->
+                assertEquals(
+                    aHashComposer.update(aHashCode, true),
+                    aHashComposer.update(aHashCode, true))
+        );
     }
 
 
@@ -58,9 +83,9 @@ abstract public class HashComposerTest
         // Then
         for (byte aValue : aValues)
             assertEquals(
-                    String.valueOf(aValue),
                     aHashComposer.update(aHashCode, aValue),
-                    aHashComposer.update(aHashCode, aValue));
+                    aHashComposer.update(aHashCode, aValue),
+                    String.valueOf(aValue));
     }
 
 
@@ -79,9 +104,9 @@ abstract public class HashComposerTest
         // Then
         for (short aValue : aValues)
             assertEquals(
-                    String.valueOf(aValue),
                     aHashComposer.update(aHashCode, aValue),
-                    aHashComposer.update(aHashCode, aValue));
+                    aHashComposer.update(aHashCode, aValue),
+                    String.valueOf(aValue));
     }
 
 
@@ -100,9 +125,9 @@ abstract public class HashComposerTest
         // Then
         for (char aValue : aValues)
             assertEquals(
-                    String.valueOf(aValue),
                     aHashComposer.update(aHashCode, aValue),
-                    aHashComposer.update(aHashCode, aValue));
+                    aHashComposer.update(aHashCode, aValue),
+                    String.valueOf(aValue));
     }
 
 
@@ -121,9 +146,9 @@ abstract public class HashComposerTest
         // Then
         for (int aValue : aValues)
             assertEquals(
-                    String.valueOf(aValue),
                     aHashComposer.update(aHashCode, aValue),
-                    aHashComposer.update(aHashCode, aValue));
+                    aHashComposer.update(aHashCode, aValue),
+                    String.valueOf(aValue));
     }
 
 
@@ -142,9 +167,9 @@ abstract public class HashComposerTest
         // Then
         for (long aValue : aValues)
             assertEquals(
-                    String.valueOf(aValue),
                     aHashComposer.update(aHashCode, aValue),
-                    aHashComposer.update(aHashCode, aValue));
+                    aHashComposer.update(aHashCode, aValue),
+                    String.valueOf(aValue));
     }
 
 
@@ -163,9 +188,9 @@ abstract public class HashComposerTest
         // Then
         for (float aValue : aValues)
             assertEquals(
-                    String.valueOf(aValue),
                     aHashComposer.update(aHashCode, aValue),
-                    aHashComposer.update(aHashCode, aValue));
+                    aHashComposer.update(aHashCode, aValue),
+                    String.valueOf(aValue));
     }
 
 
@@ -184,9 +209,9 @@ abstract public class HashComposerTest
         // Then
         for (double aValue : aValues)
             assertEquals(
-                    String.valueOf(aValue),
                     aHashComposer.update(aHashCode, aValue),
-                    aHashComposer.update(aHashCode, aValue));
+                    aHashComposer.update(aHashCode, aValue),
+                    String.valueOf(aValue));
     }
 
 

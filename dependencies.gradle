@@ -5,7 +5,8 @@ dependencies
 {
     compileOnly 'com.google.code.findbugs:jsr305:3.0.1'
 
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:2.20.1'
-    testCompile 'nl.jqno.equalsverifier:equalsverifier:2.5.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
+    testImplementation 'org.mockito:mockito-core:3.3.3'
+    testImplementation 'nl.jqno.equalsverifier:equalsverifier:3.4.1'
 }

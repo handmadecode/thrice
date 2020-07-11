@@ -1,15 +1,16 @@
 /*
- * Copyright 2015, 2017 Peter Franzen. All rights reserved.
+ * Copyright 2015, 2017, 2020 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.myire.util;
 
-import org.junit.Test;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -29,11 +30,14 @@ public class ThrowablesTest
      * The {@code withCause()} method should throw a {@code NullPointerException} if its first
      * argument is null.
      */
-    @Test(expected = NullPointerException.class)
+    @Test
     public void withCauseThrowsForNullThrowable()
     {
-        // When
-        Throwables.withCause(null, null);
+        assertThrows(
+            NullPointerException.class,
+            () ->
+                Throwables.withCause(null, null)
+        );
     }
 
 

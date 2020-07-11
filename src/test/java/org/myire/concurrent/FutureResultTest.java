@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2013, 2016-2017 Peter Franzen. All rights reserved.
+ * Copyright 2011, 2013, 2016-2017, 2020 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -11,12 +11,13 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 /**
@@ -28,12 +29,9 @@ public class FutureResultTest
 {
     /**
      * Calling {@code setResult} should succeed when the {@code FutureResult} hasn't been completed.
-     *
-     * @throws InterruptedException if the test is interrupted.
-     * @throws ExecutionException   if the test fails unexpectedly.
      */
     @Test
-    public void setResultSucceedsWhenNotCompleted() throws InterruptedException, ExecutionException
+    public void setResultSucceedsWhenNotCompleted()
     {
         // Given
         FutureResult<String> aResult = new FutureResult<>();
@@ -45,12 +43,9 @@ public class FutureResultTest
 
     /**
      * Calling {@code setResult} should fail when the {@code FutureResult} already has completed.
-     *
-     * @throws InterruptedException if the test is interrupted.
-     * @throws ExecutionException   if the test fails unexpectedly.
      */
     @Test
-    public void setResultFailsWhenCompleted() throws InterruptedException, ExecutionException
+    public void setResultFailsWhenCompleted()
     {
         // Given
         FutureResult<String> aResult = new FutureResult<>();
@@ -66,12 +61,9 @@ public class FutureResultTest
     /**
      * Calling {@code setResult} should fail when the {@code FutureResult} already has completed
      * with an exception.
-     *
-     * @throws InterruptedException if the test is interrupted.
-     * @throws ExecutionException   if the test fails unexpectedly.
      */
     @Test
-    public void setResultFailsWhenCompletedExceptionally() throws InterruptedException, ExecutionException
+    public void setResultFailsWhenCompletedExceptionally()
     {
         // Given
         FutureResult<String> aResult = new FutureResult<>();
@@ -87,12 +79,9 @@ public class FutureResultTest
     /**
      * Calling {@code setResult} should fail when the {@code FutureResult} already has been
      * canceled.
-     *
-     * @throws InterruptedException if the test is interrupted.
-     * @throws ExecutionException   if the test fails unexpectedly.
      */
     @Test
-    public void setResultFailsWhenCanceled() throws InterruptedException, ExecutionException
+    public void setResultFailsWhenCanceled()
     {
         // Given
         FutureResult<String> aResult = new FutureResult<>();
@@ -107,12 +96,9 @@ public class FutureResultTest
 
     /**
      * Calling {@code setException} should succeed when the {@code FutureResult} isn't completed.
-     *
-     * @throws InterruptedException if the test is interrupted.
-     * @throws ExecutionException   if the test fails unexpectedly.
      */
     @Test
-    public void setExceptionSucceedsWhenNotCompleted() throws InterruptedException, ExecutionException
+    public void setExceptionSucceedsWhenNotCompleted()
     {
         // Given
         FutureResult<String> aResult = new FutureResult<>();
@@ -124,12 +110,9 @@ public class FutureResultTest
 
     /**
      * Calling {@code setException} should fail when the {@code FutureResult} has completed.
-     *
-     * @throws InterruptedException if the test is interrupted.
-     * @throws ExecutionException   if the test fails unexpectedly.
      */
     @Test
-    public void setExceptionFailsWhenCompleted() throws InterruptedException, ExecutionException
+    public void setExceptionFailsWhenCompleted()
     {
         // Given
         FutureResult<String> aResult = new FutureResult<>();
@@ -145,12 +128,9 @@ public class FutureResultTest
     /**
      * Calling {@code setException} should fail when the {@code FutureResult} already has completed
      * with an exception.
-     *
-     * @throws InterruptedException if the test is interrupted.
-     * @throws ExecutionException   if the test fails unexpectedly.
      */
     @Test
-    public void setExceptionFailsWhenCompletedExceptionally() throws InterruptedException, ExecutionException
+    public void setExceptionFailsWhenCompletedExceptionally()
     {
         // Given
         FutureResult<String> aResult = new FutureResult<>();
@@ -165,12 +145,9 @@ public class FutureResultTest
 
     /**
      * Calling {@code setException} should fail when the {@code FutureResult} has been canceled.
-     *
-     * @throws InterruptedException if the test is interrupted.
-     * @throws ExecutionException   if the test fails unexpectedly.
      */
     @Test
-    public void setExceptionFailsWhenCanceled() throws InterruptedException, ExecutionException
+    public void setExceptionFailsWhenCanceled()
     {
         // Given
         FutureResult<String> aResult = new FutureResult<>();
@@ -185,12 +162,9 @@ public class FutureResultTest
 
     /**
      * Calling {@code cancel} should succeed when the {@code FutureResult} isn't completed.
-     *
-     * @throws InterruptedException if the test is interrupted.
-     * @throws ExecutionException   if the test fails unexpectedly.
      */
     @Test
-    public void cancelSucceedsWhenNotCompleted() throws InterruptedException, ExecutionException
+    public void cancelSucceedsWhenNotCompleted()
     {
         // Given
         FutureResult<String> aResult = new FutureResult<>();
@@ -202,12 +176,9 @@ public class FutureResultTest
 
     /**
      * Calling {@code cancel} should fail when the {@code FutureResult} has completed.
-     *
-     * @throws InterruptedException if the test is interrupted.
-     * @throws ExecutionException   if the test fails unexpectedly.
      */
     @Test
-    public void cancelFailsWhenCompleted() throws InterruptedException, ExecutionException
+    public void cancelFailsWhenCompleted()
     {
         // Given
         FutureResult<String> aResult = new FutureResult<>();
@@ -223,12 +194,9 @@ public class FutureResultTest
     /**
      * Calling {@code cancel} should fail when the {@code FutureResult} already has completed with
      * an exception.
-     *
-     * @throws InterruptedException if the test is interrupted.
-     * @throws ExecutionException   if the test fails unexpectedly.
      */
     @Test
-    public void cancelFailsWhenCompletedExceptionally() throws InterruptedException, ExecutionException
+    public void cancelFailsWhenCompletedExceptionally()
     {
         // Given
         FutureResult<String> aResult = new FutureResult<>();
@@ -243,12 +211,9 @@ public class FutureResultTest
 
     /**
      * Calling {@code cancel} should fail when the {@code FutureResult} already has been canceled.
-     *
-     * @throws InterruptedException if the test is interrupted.
-     * @throws ExecutionException   if the test fails unexpectedly.
      */
     @Test
-    public void cancelFailsWhenCanceled() throws InterruptedException, ExecutionException
+    public void cancelFailsWhenCanceled()
     {
         // Given
         FutureResult<String> aResult = new FutureResult<>();
@@ -263,12 +228,9 @@ public class FutureResultTest
 
     /**
      * Calling {@code cancel(true)} should cancel the task assuming it has not completed.
-     *
-     * @throws InterruptedException if the test is interrupted.
-     * @throws ExecutionException   if the test fails unexpectedly.
      */
     @Test
-    public void cancelWithMayInterruptTrueCancels() throws InterruptedException, ExecutionException
+    public void cancelWithMayInterruptTrueCancels()
     {
         // Given
         FutureResult<String> aResult = new FutureResult<>();
@@ -277,19 +239,18 @@ public class FutureResultTest
         boolean aWasCancelled = aResult.cancel(true);
 
         // Then
-        assertTrue(aWasCancelled);
-        assertTrue(aResult.isCancelled());
+        assertAll(
+            () -> assertTrue(aWasCancelled),
+            () -> assertTrue(aResult.isCancelled())
+        );
     }
 
 
     /**
      * Calling {@code cancel(false)} should cancel the task assuming it has not completed.
-     *
-     * @throws InterruptedException if the test is interrupted.
-     * @throws ExecutionException   if the test fails unexpectedly.
      */
     @Test
-    public void cancelWithMayInterruptFalseCancels() throws InterruptedException, ExecutionException
+    public void cancelWithMayInterruptFalseCancels()
     {
         // Given
         FutureResult<String> aResult = new FutureResult<>();
@@ -298,8 +259,10 @@ public class FutureResultTest
         boolean aWasCancelled = aResult.cancel(false);
 
         // Then
-        assertTrue(aWasCancelled);
-        assertTrue(aResult.isCancelled());
+        assertAll(
+            () -> assertTrue(aWasCancelled),
+            () -> assertTrue(aResult.isCancelled())
+        );
     }
 
 
@@ -321,8 +284,10 @@ public class FutureResultTest
         aResult.setResult(aValue);
 
         // Then (the call to get() should have returned the result)
-        assertTrue(aGetAction.timedJoin(10, TimeUnit.SECONDS));
-        assertEquals(aValue, aGetAction.getResult());
+        assertAll(
+            () -> assertTrue(aGetAction.timedJoin(10, TimeUnit.SECONDS)),
+            () -> assertEquals(aValue, aGetAction.getResult())
+        );
     }
 
 
@@ -374,8 +339,10 @@ public class FutureResultTest
 
         // Then (the call to get() should have thrown an ExecutionException containing the
         // Exception passed to setException())
-        assertTrue(aGetAction.timedJoin(10, TimeUnit.SECONDS));
-        assertSame(aException, aGetAction.getExecutionException().getCause());
+        assertAll(
+            () -> assertTrue(aGetAction.timedJoin(10, TimeUnit.SECONDS)),
+            () -> assertSame(aException, aGetAction.getExecutionException().getCause())
+        );
     }
 
 
@@ -397,8 +364,10 @@ public class FutureResultTest
         aResult.cancel();
 
         // Then (the call to get() should have thrown a CancellationException)
-        assertTrue(aGetAction.timedJoin(10, TimeUnit.SECONDS));
-        assertNotNull(aGetAction.getCancellationException());
+        assertAll(
+            () -> assertTrue(aGetAction.timedJoin(10, TimeUnit.SECONDS)),
+            () -> assertNotNull(aGetAction.getCancellationException())
+        );
     }
 
 
@@ -409,7 +378,7 @@ public class FutureResultTest
      * @throws InterruptedException if the test is interrupted.
      */
     @Test
-    public void timedGetReturnsValueFromSetResult() throws InterruptedException, ExecutionException, TimeoutException
+    public void timedGetReturnsValueFromSetResult() throws InterruptedException
     {
         // Given
         String aValue = "ghastly";
@@ -421,8 +390,10 @@ public class FutureResultTest
         aResult.setResult(aValue);
 
         // Then (the call to get() should have returned the result)
-        assertTrue(aGetAction.timedJoin(10, TimeUnit.SECONDS));
-        assertEquals(aValue, aGetAction.getResult());
+        assertAll(
+            () -> assertTrue(aGetAction.timedJoin(10, TimeUnit.SECONDS)),
+            () -> assertEquals(aValue, aGetAction.getResult())
+        );
     }
 
 
@@ -433,7 +404,7 @@ public class FutureResultTest
      * @throws InterruptedException if the test is interrupted.
      */
     @Test
-    public void timedGetThrowsWhenNotCompleted() throws InterruptedException, ExecutionException, TimeoutException
+    public void timedGetThrowsWhenNotCompleted() throws InterruptedException
     {
         // Given
         FutureResult<String> aResult = new FutureResult<>();
@@ -443,8 +414,10 @@ public class FutureResultTest
         aGetAction.startAndAwaitRun();
 
         // Then
-        assertTrue(aGetAction.timedJoin(10, TimeUnit.SECONDS));
-        assertNotNull(aGetAction.getTimeoutException());
+        assertAll(
+            () -> assertTrue(aGetAction.timedJoin(10, TimeUnit.SECONDS)),
+            () -> assertNotNull(aGetAction.getTimeoutException())
+        );
     }
 
 
@@ -468,8 +441,10 @@ public class FutureResultTest
 
         // Then (the call to get() should have thrown an ExecutionException containing the
         // Exception passed to setException())
-        assertTrue(aGetAction.timedJoin(10, TimeUnit.SECONDS));
-        assertSame(aException, aGetAction.getExecutionException().getCause());
+        assertAll(
+            () -> assertTrue(aGetAction.timedJoin(10, TimeUnit.SECONDS)),
+            () -> assertSame(aException, aGetAction.getExecutionException().getCause())
+        );
     }
 
 
@@ -491,8 +466,10 @@ public class FutureResultTest
         aResult.cancel();
 
         // Then (the call to get() should have thrown a CancellationException)
-        assertTrue(aGetAction.timedJoin(10, TimeUnit.SECONDS));
-        assertNotNull(aGetAction.getCancellationException());
+        assertAll(
+            () -> assertTrue(aGetAction.timedJoin(10, TimeUnit.SECONDS)),
+            () -> assertNotNull(aGetAction.getCancellationException())
+        );
     }
 
 
@@ -506,9 +483,11 @@ public class FutureResultTest
         FutureResult<Object> aResult = new FutureResult<>();
 
         // Then
-        assertFalse(aResult.isDone());
-        assertFalse(aResult.completedExceptionally());
-        assertFalse(aResult.isCancelled());
+        assertAll(
+            () -> assertFalse(aResult.isDone()),
+            () -> assertFalse(aResult.completedExceptionally()),
+            () -> assertFalse(aResult.isCancelled())
+        );
     }
 
 
@@ -525,9 +504,11 @@ public class FutureResultTest
         aResult.setResult(new Object());
 
         // Then
-        assertTrue(aResult.isDone());
-        assertFalse(aResult.completedExceptionally());
-        assertFalse(aResult.isCancelled());
+        assertAll(
+            () -> assertTrue(aResult.isDone()),
+            () -> assertFalse(aResult.completedExceptionally()),
+            () -> assertFalse(aResult.isCancelled())
+        );
     }
 
 
@@ -544,9 +525,11 @@ public class FutureResultTest
         aResult.setException(new Exception());
 
         // Then
-        assertTrue(aResult.isDone());
-        assertTrue(aResult.completedExceptionally());
-        assertFalse(aResult.isCancelled());
+        assertAll(
+            () -> assertTrue(aResult.isDone()),
+            () -> assertTrue(aResult.completedExceptionally()),
+            () -> assertFalse(aResult.isCancelled())
+        );
     }
 
 
@@ -563,9 +546,11 @@ public class FutureResultTest
         aResult.cancel();
 
         // Then
-        assertTrue(aResult.isDone());
-        assertFalse(aResult.completedExceptionally());
-        assertTrue(aResult.isCancelled());
+        assertAll(
+            () -> assertTrue(aResult.isDone()),
+            () -> assertFalse(aResult.completedExceptionally()),
+            () -> assertTrue(aResult.isCancelled())
+        );
     }
 
 

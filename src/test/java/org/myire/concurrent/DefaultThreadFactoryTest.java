@@ -1,13 +1,14 @@
 /*
- * Copyright 2007-2010, 2016-2017 Peter Franzen. All rights reserved.
+ * Copyright 2007-2010, 2016-2017, 2020 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.myire.concurrent;
 
-import org.junit.Test;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 /**
@@ -28,10 +29,14 @@ public class DefaultThreadFactoryTest extends AbstractDefaultThreadFactoryTest
      * The constructor should throw a {@code NullPointerException} when passed a null base name.
      */
     @SuppressWarnings("unused")
-    @Test(expected=NullPointerException.class)
+    @Test
     public void ctorThrowsForNullBaseName()
     {
-        new DefaultThreadFactory(null, false);
+        assertThrows(
+            NullPointerException.class,
+            () ->
+                new DefaultThreadFactory(null, false)
+        );
     }
 
 

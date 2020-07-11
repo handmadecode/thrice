@@ -1,5 +1,5 @@
 /*
- * Copyright 2009, 2012, 2016-2017 Peter Franzen. All rights reserved.
+ * Copyright 2009, 2012, 2016-2017, 2020 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -7,10 +7,12 @@ package org.myire.util;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 /**
@@ -48,10 +50,14 @@ public class NumbersTest
      * The {@code requireNonNegative(int)} method should throw an {@code IllegalArgumentException}
      * for any negative argument.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void requireNonNegativeThrowsForNegativeInt()
     {
-        Numbers.requireNonNegative(randomNegativeInt());
+        assertThrows(
+            IllegalArgumentException.class,
+            () ->
+                Numbers.requireNonNegative(randomNegativeInt())
+        );
     }
 
 
@@ -83,154 +89,174 @@ public class NumbersTest
      * The {@code requireNonNegative(long)} method should throw an {@code IllegalArgumentException}
      * for any negative argument.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void requireNonNegativeThrowsForNegativeLong()
     {
-        Numbers.requireNonNegative(randomNegativeLong());
+        assertThrows(
+            IllegalArgumentException.class,
+            () ->
+                Numbers.requireNonNegative(randomNegativeLong())
+        );
     }
 
 
     /**
      * The {@code parseInt} method should parse valid integer values and return the expected
      * {@code int}.
-     *
-     * @throws MalformedDataException   if the test fails unexpectedly.
      */
     @Test
-    public void parseIntParsesValidIntegers() throws MalformedDataException
+    public void parseIntParsesValidIntegers()
     {
-        assertEquals(0, Numbers.parseInt("0"));
-        assertEquals(0, Numbers.parseInt("00"));
-        assertEquals(1, Numbers.parseInt("01"));
-        assertEquals(-1, Numbers.parseInt("-1"));
-        assertEquals(-2, Numbers.parseInt("-0002"));
-        assertEquals(20, Numbers.parseInt("020"));
-        assertEquals(-10, Numbers.parseInt("-0010"));
-        assertEquals(Integer.MAX_VALUE, Numbers.parseInt(String.valueOf(Integer.MAX_VALUE)));
-        assertEquals(Integer.MIN_VALUE, Numbers.parseInt(String.valueOf(Integer.MIN_VALUE)));
+        assertAll(
+            () -> assertEquals(0, Numbers.parseInt("0")),
+            () -> assertEquals(0, Numbers.parseInt("00")),
+            () -> assertEquals(1, Numbers.parseInt("01")),
+            () -> assertEquals(-1, Numbers.parseInt("-1")),
+            () -> assertEquals(-2, Numbers.parseInt("-0002")),
+            () -> assertEquals(20, Numbers.parseInt("020")),
+            () -> assertEquals(-10, Numbers.parseInt("-0010")),
+            () -> assertEquals(Integer.MAX_VALUE, Numbers.parseInt(String.valueOf(Integer.MAX_VALUE))),
+            () -> assertEquals(Integer.MIN_VALUE, Numbers.parseInt(String.valueOf(Integer.MIN_VALUE)))
+        );
     }
 
 
     /**
      * The {@code parseInt} method should throw a {@code NullPointerException} for a null argument.
-     *
-     * @throws MalformedDataException   if the test fails unexpectedly.
      */
-    @Test(expected=NullPointerException.class)
-    public void parseIntThrowsForNullArgument() throws MalformedDataException
+    @Test
+    public void parseIntThrowsForNullArgument()
     {
-        Numbers.parseInt(null);
+        assertThrows(
+            NullPointerException.class,
+            () ->
+                Numbers.parseInt(null)
+        );
     }
 
 
     /**
      * The {@code parseInt} method should throw a {@code MalformedDataException} for a malformed
      * argument.
-     *
-     * @throws MalformedDataException   always.
      */
-    @Test(expected=MalformedDataException.class)
-    public void parseIntThrowsForMalformedArgument() throws MalformedDataException
+    @Test
+    public void parseIntThrowsForMalformedArgument()
     {
-        Numbers.parseInt("3.14");
+        assertThrows(
+            MalformedDataException.class,
+            () ->
+                Numbers.parseInt("3.14")
+        );
     }
 
 
     /**
      * The {@code parseInt} method should throw a {@code MalformedDataException} for an empty
      * string.
-     *
-     * @throws MalformedDataException   always.
      */
-    @Test(expected=MalformedDataException.class)
-    public void parseIntThrowsForEmptyString() throws MalformedDataException
+    @Test
+    public void parseIntThrowsForEmptyString()
     {
-        Numbers.parseInt("");
+        assertThrows(
+            MalformedDataException.class,
+            () ->
+                Numbers.parseInt("")
+        );
     }
 
 
     /**
      * The {@code parseInt} method should throw a {@code MalformedDataException} for a string with a
      * value that is greater than {@code Integer.MAX_VALUE}.
-     *
-     * @throws MalformedDataException   always.
      */
-    @Test(expected=MalformedDataException.class)
-    public void parseIntThrowsForTooLargeValue() throws MalformedDataException
+    @Test
+    public void parseIntThrowsForTooLargeValue()
     {
-        Numbers.parseInt("2147483648");
+        assertThrows(
+            MalformedDataException.class,
+            () ->
+                Numbers.parseInt("2147483648")
+        );
     }
 
 
     /**
      * The {@code parseLong} method should parse valid long values and return the expected
      * {@code long}.
-     *
-     * @throws MalformedDataException   if the test fails unexpectedly.
      */
     @Test
-    public void parseLongParsesValidLongs() throws MalformedDataException
+    public void parseLongParsesValidLongs()
     {
-        assertEquals(0, Numbers.parseLong("0"));
-        assertEquals(0, Numbers.parseLong("00"));
-        assertEquals(1, Numbers.parseLong("01"));
-        assertEquals(-1, Numbers.parseLong("-1"));
-        assertEquals(-2, Numbers.parseLong("-0002"));
-        assertEquals(20, Numbers.parseLong("020"));
-        assertEquals(-10, Numbers.parseLong("-0010"));
-        assertEquals(Long.MAX_VALUE, Numbers.parseLong(String.valueOf(Long.MAX_VALUE)));
-        assertEquals(Long.MIN_VALUE, Numbers.parseLong(String.valueOf(Long.MIN_VALUE)));
+        assertAll(
+            () -> assertEquals(0, Numbers.parseLong("0")),
+            () -> assertEquals(0, Numbers.parseLong("00")),
+            () -> assertEquals(1, Numbers.parseLong("01")),
+            () -> assertEquals(-1, Numbers.parseLong("-1")),
+            () -> assertEquals(-2, Numbers.parseLong("-0002")),
+            () -> assertEquals(20, Numbers.parseLong("020")),
+            () -> assertEquals(-10, Numbers.parseLong("-0010")),
+            () -> assertEquals(Long.MAX_VALUE, Numbers.parseLong(String.valueOf(Long.MAX_VALUE))),
+            () -> assertEquals(Long.MIN_VALUE, Numbers.parseLong(String.valueOf(Long.MIN_VALUE)))
+        );
     }
 
 
     /**
      * The {@code parseLong} method should throw a {@code NullPointerException} for a null argument.
-     *
-     * @throws MalformedDataException   if the test fails unexpectedly.
      */
-    @Test(expected=NullPointerException.class)
-    public void parseLongThrowsForNullArgument() throws MalformedDataException
+    @Test
+    public void parseLongThrowsForNullArgument()
     {
-        Numbers.parseLong(null);
+        assertThrows(
+            NullPointerException.class,
+            () ->
+                Numbers.parseLong(null)
+        );
     }
 
 
     /**
      * The {@code parseLong} method should throw a {@code MalformedDataException} for a malformed
      * argument.
-     *
-     * @throws MalformedDataException   always.
      */
-    @Test(expected=MalformedDataException.class)
-    public void parseLongThrowsForMalformedArgument() throws MalformedDataException
+    @Test
+    public void parseLongThrowsForMalformedArgument()
     {
-        Numbers.parseLong("3.14");
+        assertThrows(
+            MalformedDataException.class,
+            () ->
+                Numbers.parseLong("3.14")
+        );
     }
 
 
     /**
      * The {@code parseLong} method should throw a {@code MalformedDataException} for an empty
      * string.
-     *
-     * @throws MalformedDataException   always.
      */
-    @Test(expected=MalformedDataException.class)
-    public void parseLongThrowsForEmptyString() throws MalformedDataException
+    @Test
+    public void parseLongThrowsForEmptyString()
     {
-        Numbers.parseLong("");
+        assertThrows(
+            MalformedDataException.class,
+            () ->
+                Numbers.parseLong("")
+        );
     }
 
 
     /**
      * The {@code parseLong} method should throw a {@code MalformedDataException} for a string with
      * a value that is greater than {@code Long.MAX_VALUE}.
-     *
-     * @throws MalformedDataException   always.
      */
-    @Test(expected=MalformedDataException.class)
-    public void parseLongThrowsForTooLargeValue() throws MalformedDataException
+    @Test
+    public void parseLongThrowsForTooLargeValue()
     {
-        Numbers.parseLong("9223372036854775808");
+        assertThrows(
+            MalformedDataException.class,
+            () ->
+                Numbers.parseLong("9223372036854775808")
+        );
     }
 
 
@@ -268,31 +294,33 @@ public class NumbersTest
     @Test
     public void roundUpToPowerOf2ReturnsTheCorrectValue()
     {
-        assertEquals(0, Numbers.roundUpToPowerOf2(0));
+        assertAll(
+            () -> assertEquals(0, Numbers.roundUpToPowerOf2(0)),
 
-        assertEquals(1, Numbers.roundUpToPowerOf2(1));
+            () -> assertEquals(1, Numbers.roundUpToPowerOf2(1)),
 
-        assertEquals(2, Numbers.roundUpToPowerOf2(2));
+            () -> assertEquals(2, Numbers.roundUpToPowerOf2(2)),
 
-        assertEquals(4, Numbers.roundUpToPowerOf2(3));
-        assertEquals(4, Numbers.roundUpToPowerOf2(4));
+            () -> assertEquals(4, Numbers.roundUpToPowerOf2(3)),
+            () -> assertEquals(4, Numbers.roundUpToPowerOf2(4)),
 
-        assertEquals(8, Numbers.roundUpToPowerOf2(5));
-        assertEquals(8, Numbers.roundUpToPowerOf2(7));
-        assertEquals(8, Numbers.roundUpToPowerOf2(8));
+            () -> assertEquals(8, Numbers.roundUpToPowerOf2(5)),
+            () -> assertEquals(8, Numbers.roundUpToPowerOf2(7)),
+            () -> assertEquals(8, Numbers.roundUpToPowerOf2(8)),
 
-        assertEquals(16, Numbers.roundUpToPowerOf2(9));
-        assertEquals(16, Numbers.roundUpToPowerOf2(11));
-        assertEquals(16, Numbers.roundUpToPowerOf2(15));
-        assertEquals(16, Numbers.roundUpToPowerOf2(16));
+            () -> assertEquals(16, Numbers.roundUpToPowerOf2(9)),
+            () -> assertEquals(16, Numbers.roundUpToPowerOf2(11)),
+            () -> assertEquals(16, Numbers.roundUpToPowerOf2(15)),
+            () -> assertEquals(16, Numbers.roundUpToPowerOf2(16)),
 
-        assertEquals(0x10000, Numbers.roundUpToPowerOf2(0xfffe));
-        assertEquals(0x10000, Numbers.roundUpToPowerOf2(0xffff));
-        assertEquals(0x10000, Numbers.roundUpToPowerOf2(0x10000));
-        assertEquals(0x20000, Numbers.roundUpToPowerOf2(0x10001));
+            () -> assertEquals(0x10000, Numbers.roundUpToPowerOf2(0xfffe)),
+            () -> assertEquals(0x10000, Numbers.roundUpToPowerOf2(0xffff)),
+            () -> assertEquals(0x10000, Numbers.roundUpToPowerOf2(0x10000)),
+            () -> assertEquals(0x20000, Numbers.roundUpToPowerOf2(0x10001)),
 
-        assertEquals(0x40000000, Numbers.roundUpToPowerOf2(0x3fffffff));
-        assertEquals(0x40000000, Numbers.roundUpToPowerOf2(0x40000000));
+            () -> assertEquals(0x40000000, Numbers.roundUpToPowerOf2(0x3fffffff)),
+            () -> assertEquals(0x40000000, Numbers.roundUpToPowerOf2(0x40000000))
+        );
     }
 
 
@@ -302,8 +330,10 @@ public class NumbersTest
     @Test
     public void roundUpToPowerOf2ReturnsZeroForNegativeValues()
     {
-        assertEquals(0, Numbers.roundUpToPowerOf2(-1));
-        assertEquals(0, Numbers.roundUpToPowerOf2(Integer.MIN_VALUE));
+        assertAll(
+            () -> assertEquals(0, Numbers.roundUpToPowerOf2(-1)),
+            () -> assertEquals(0, Numbers.roundUpToPowerOf2(Integer.MIN_VALUE))
+        );
     }
 
 
@@ -314,8 +344,10 @@ public class NumbersTest
     @Test
     public void roundUpToPowerOf2ReturnsZeroForTooLargeValues()
     {
-        assertEquals(0, Numbers.roundUpToPowerOf2(0x40000001));
-        assertEquals(0, Numbers.roundUpToPowerOf2(Integer.MAX_VALUE));
+        assertAll(
+            () -> assertEquals(0, Numbers.roundUpToPowerOf2(0x40000001)),
+            () -> assertEquals(0, Numbers.roundUpToPowerOf2(Integer.MAX_VALUE))
+        );
     }
 
     @Test
@@ -418,6 +450,72 @@ public class NumbersTest
     {
         // Given
         assertEquals(Long.MIN_VALUE, Numbers.abs(Long.MIN_VALUE));
+    }
+
+
+    @Test
+    public void countIntDigitsProducesTheCorrectResultForPositiveValues()
+    {
+        for (int i=0; i<65536; i++)
+            countIntDigitsProducesTheCorrectResultForPositiveValue(i);
+        for (int i=0; i<100; i++)
+            countIntDigitsProducesTheCorrectResultForPositiveValue(
+                ThreadLocalRandom.current().nextInt(0, Integer.MAX_VALUE));
+
+        countIntDigitsProducesTheCorrectResultForPositiveValue(Integer.MAX_VALUE);
+    }
+
+
+    static private void countIntDigitsProducesTheCorrectResultForPositiveValue(int pValue)
+    {
+        assertEquals(String.valueOf(pValue).length(), Numbers.countDigits(pValue));
+    }
+
+
+    /**
+     * The {@code countDigits} method should return {@code 1} for negative integer values.
+     */
+    @Test
+    public void countIntDigitsProducesTheCorrectResultForNegativeValues()
+    {
+        assertAll(
+            () -> assertEquals(1, Numbers.countDigits(-1)),
+            () -> assertEquals(1, Numbers.countDigits(-4711)),
+            () -> assertEquals(1, Numbers.countDigits(Integer.MIN_VALUE))
+        );
+    }
+
+
+    @Test
+    public void countLongDigitsProducesTheCorrectResultForPositiveValues()
+    {
+        for (long i=0; i<65536; i++)
+            countLongDigitsProducesTheCorrectResultForPositiveValue(i);
+        for (int i=0; i<100; i++)
+            countLongDigitsProducesTheCorrectResultForPositiveValue(
+                ThreadLocalRandom.current().nextLong(0, Long.MAX_VALUE));
+
+        countLongDigitsProducesTheCorrectResultForPositiveValue(Long.MAX_VALUE);
+    }
+
+
+    static private void countLongDigitsProducesTheCorrectResultForPositiveValue(long pValue)
+    {
+        assertEquals(String.valueOf(pValue).length(), Numbers.countDigits(pValue));
+    }
+
+
+    /**
+     * The {@code countDigits} method should return {@code 1} for negative long values.
+     */
+    @Test
+    public void countLongDigitsProducesTheCorrectResultForNegativeValues()
+    {
+        assertAll(
+            () -> assertEquals(1, Numbers.countDigits(-1L)),
+            () -> assertEquals(1, Numbers.countDigits(-4711L)),
+            () -> assertEquals(1, Numbers.countDigits(Long.MIN_VALUE))
+        );
     }
 
 

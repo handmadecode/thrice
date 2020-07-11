@@ -1,5 +1,5 @@
 /*
- * Copyright 2004, 2009, 2016 Peter Franzen. All rights reserved.
+ * Copyright 2004, 2009, 2016, 2020 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -7,9 +7,10 @@ package org.myire.text;
 
 import java.util.BitSet;
 
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 /**
@@ -288,11 +289,13 @@ public class KnuthMorrisPrattMatcherTest
         int aNumMatches = aMatcher.findAllMatches(aCharSequence, aPositions::set);
 
         // Then
-        assertEquals(aNumExpectedMatches, aNumMatches);
-        assertEquals(aNumExpectedMatches, aPositions.cardinality());
-        assertTrue(aPositions.get(1));
-        assertTrue(aPositions.get(29));
-        assertTrue(aPositions.get(37));
+        assertAll(
+            () -> assertEquals(aNumExpectedMatches, aNumMatches),
+            () -> assertEquals(aNumExpectedMatches, aPositions.cardinality()),
+            () -> assertTrue(aPositions.get(1)),
+            () -> assertTrue(aPositions.get(29)),
+            () -> assertTrue(aPositions.get(37))
+        );
     }
 
 
@@ -320,11 +323,13 @@ public class KnuthMorrisPrattMatcherTest
                 aPositions::set);
 
         // Then
-        assertEquals(3, aNumMatches);
-        assertEquals(3, aPositions.cardinality());
-        assertTrue(aPositions.get(aStartMatchPos));
-        assertTrue(aPositions.get(aMiddleMatchPos));
-        assertTrue(aPositions.get(aEndMatchPos));
+        assertAll(
+            () -> assertEquals(3, aNumMatches),
+            () -> assertEquals(3, aPositions.cardinality()),
+            () -> assertTrue(aPositions.get(aStartMatchPos)),
+            () -> assertTrue(aPositions.get(aMiddleMatchPos)),
+            () -> assertTrue(aPositions.get(aEndMatchPos))
+        );
     }
 
 
@@ -396,8 +401,10 @@ public class KnuthMorrisPrattMatcherTest
         int aNumMatches = aMatcher.findAllMatches(aCharSequence, aPosAfterMatch, aCharSequence.length(), aPositions::set);
 
         // Then
-        assertEquals(0, aNumMatches);
-        assertEquals(0, aPositions.cardinality());
+        assertAll(
+            () -> assertEquals(0, aNumMatches),
+            () -> assertEquals(0, aPositions.cardinality())
+        );
     }
 
 
@@ -419,7 +426,9 @@ public class KnuthMorrisPrattMatcherTest
         int aNumMatches = aMatcher.findAllMatches(aCharSequence, 0, aMatchPos, aPositions::set);
 
         // Then
-        assertEquals(0, aNumMatches);
-        assertEquals(0, aPositions.cardinality());
+        assertAll(
+            () -> assertEquals(0, aNumMatches),
+            () -> assertEquals(0, aPositions.cardinality())
+        );
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2006, 2007, 2009-2011, 2017 Peter Franzen. All rights reserved.
+ * Copyright 2006, 2007, 2009-2011, 2017, 2020 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -10,12 +10,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -34,10 +35,14 @@ public class TaskRunnerTest
      * The constructor should throw a {@code NullPointerException} when passed a null task
      * parameter.
      */
-    @Test(expected = NullPointerException.class)
+    @Test
     public void ctorThrowsForNullTask()
     {
-        new TaskRunner(null);
+        assertThrows(
+            NullPointerException.class,
+            () ->
+                new TaskRunner(null)
+        );
     }
 
 
@@ -45,10 +50,14 @@ public class TaskRunnerTest
      * The constructor should throw a {@code NullPointerException} when passed a null task parameter
      * and a non-null thread factory parameter.
      */
-    @Test(expected = NullPointerException.class)
+    @Test
     public void ctorThrowsForNullTaskAndNonnullThreadFactory()
     {
-        new TaskRunner(null, Executors.defaultThreadFactory());
+        assertThrows(
+            NullPointerException.class,
+            () ->
+                new TaskRunner(null, Executors.defaultThreadFactory())
+        );
     }
 
 
@@ -56,10 +65,14 @@ public class TaskRunnerTest
      * The constructor should throw a {@code NullPointerException} when passed a null thread factory
      * parameter and a non-null task parameter.
      */
-    @Test(expected = NullPointerException.class)
+    @Test
     public void ctorThrowsForNullThreadFactory()
     {
-        new TaskRunner(() -> {}, null);
+        assertThrows(
+            NullPointerException.class,
+            () ->
+                new TaskRunner(() -> {}, null)
+        );
     }
 
 
@@ -87,7 +100,7 @@ public class TaskRunnerTest
      * {@code ThreadFactory} passed to the constructor.
      */
     @Test
-    public void startTaskUsesThreadFactoryPassedToConstructor() throws InterruptedException
+    public void startTaskUsesThreadFactoryPassedToConstructor()
     {
         // Given
         ThreadFactory aThreadFactory = spy(new UserThreadFactory("x", false));
@@ -227,8 +240,10 @@ public class TaskRunnerTest
 
         // Then (the task should have been interrupted and its thread have terminated before
         // stopTask() returns)
-        assertTrue(aTask.wasInterrupted());
-        assertFalse(aTask.getThread().isAlive());
+        assertAll(
+            () -> assertTrue(aTask.wasInterrupted()),
+            () -> assertFalse(aTask.getThread().isAlive())
+        );
     }
 
 
@@ -251,8 +266,10 @@ public class TaskRunnerTest
         aRunner.stopTask();
 
         // Then
-        assertFalse(aTask.wasInterrupted());
-        assertFalse(aTask.getThread().isAlive());
+        assertAll(
+            () -> assertFalse(aTask.wasInterrupted()),
+            () -> assertFalse(aTask.getThread().isAlive())
+        );
     }
 
 
@@ -285,8 +302,10 @@ public class TaskRunnerTest
             // Then (stopTask() should have thrown an InterruptedException and returned without
             // waiting for the task execution thread to terminate).
             assertTrue(aStopTask.timedJoin(10, TimeUnit.SECONDS));
-            assertTrue(aStopTask.wasInterrupted());
-            assertTrue(aRunner.isRunning());
+            assertAll(
+                () -> assertTrue(aStopTask.wasInterrupted()),
+                () -> assertTrue(aRunner.isRunning())
+            );
         }
         finally
         {
@@ -301,7 +320,7 @@ public class TaskRunnerTest
      * started.
      */
     @Test
-    public void isRunningReturnsFalseWhenTaskHasNotStarted() throws InterruptedException
+    public void isRunningReturnsFalseWhenTaskHasNotStarted()
     {
         // Given
         TaskRunner aRunner = new TaskRunner(() -> {});
@@ -327,9 +346,9 @@ public class TaskRunnerTest
         {
             // When (the task is running)
             aRunner.startTask();
-            assertTrue(aTask.awaitRun(10, TimeUnit.SECONDS));
 
             // Then
+            assertTrue(aTask.awaitRun(10, TimeUnit.SECONDS));
             assertTrue(aRunner.isRunning());
 
         }
@@ -369,22 +388,17 @@ public class TaskRunnerTest
      * before starting the task execution thread.
      */
     @Test
-    public void isRunningReturnsFalseIfStartTaskThrows() throws InterruptedException
+    public void isRunningReturnsFalseIfStartTaskThrows()
     {
         // Given
         TaskRunner aRunner = spy(new TaskRunner(() -> {}));
         doThrow(new RuntimeException()).when(aRunner).prepareExecutionThread(any());
 
-        // When (start the task and catch the exception thrown)
-        try
-        {
-            aRunner.startTask();
-            fail("startTask() did not throw");
-        }
-        catch (RuntimeException expected)
-        {
-            // Expected, and asserts follow.
-        }
+        // Then (starting the task should throw the RuntimeException)
+        assertThrows(
+            RuntimeException.class,
+            aRunner::startTask
+        );
 
         // Then
         assertFalse(aRunner.isRunning());

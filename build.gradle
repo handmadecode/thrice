@@ -1,25 +1,13 @@
 /*
  * Gradle script for the Thrice project
  */
-apply plugin: 'org.myire.quill.core'
-apply plugin: 'org.myire.quill.moduleinfo'
-
-
-buildscript
+plugins
 {
-    // Use Maven central for plugins.
-    repositories
-    {
-        mavenCentral()
-    }
-
-    // This script uses the Quill plugins.
-    dependencies
-    {
-        classpath 'org.myire:quill:1.5'
-    }
+    id "com.github.spotbugs" version "4.4.4"
+    id "org.myire.quill.core" version "2.4"
+    id "org.myire.quill.moduleinfo" version "2.4"
+    id "org.myire.quill.jol" version "2.4"
 }
-
 
 // Build for compatibility with Java 8
 sourceCompatibility = '1.8'
@@ -58,19 +46,18 @@ jar.manifest
 createPom.from(file('meta/pom-template.xml')).withoutScope('test')
 
 
-// Specify the JavaDoc html version to avoid warnings (only valid when building with JDK > 9).
-javadoc.options.addBooleanOption('html4', true)
+// Run tests with JUnit 5.
+test.useJUnitPlatform()
 
 
-// Ignore all methods annotated with 'Unreachable' when analysing test code coverage.
-cobertura.ignoreMethodAnnotations += "org.myire.annotation.Unreachable"
+// Specify the JavaDoc html version to avoid warnings when building with JDK 9 or 10.
+javadoc.options.addBooleanOption('html5', true)
 
 
 // Configure project specific exclusion/suppressions/filter files for the static analysis tasks.
-findbugs.excludeFilter = file('gradle/findbugs_excludes.xml')
+spotbugs.excludeFilter = file('gradle/spotbugs_excludes.xml')
 checkstyle.configProperties.put('suppressions.file', file('gradle/checkstyle_suppressions.xml'))
 pmdMain.filter.file = 'gradle/pmd_filter.xml'
 
-
 // Disable code quality analysis of the test sources.
-[findbugs, checkstyle, pmd, jdepend]*.disableTestChecks()
+[spotbugs, checkstyle, pmd]*.disableTestChecks()
