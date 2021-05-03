@@ -1,11 +1,11 @@
 /*
- * Copyright 2013, 2017 Peter Franzen. All rights reserved.
+ * Copyright 2013, 2017, 2021 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.myire.collection;
 
-import java.util.function.Consumer;
+import java.util.Iterator;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
  *
  * @author <a href="mailto:peter@myire.org">Peter Franzen</a>
  */
-public interface Sequence<E>
+public interface Sequence<E> extends Iterable<E>
 {
     /**
      * Get the number of elements in this sequence.
@@ -50,12 +50,14 @@ public interface Sequence<E>
     @Nullable E elementAt(int pIndex);
 
     /**
-     * Perform an action for each element in the sequence. The action is performed sequentially in
-     * the order of the elements. Exceptions thrown by the action are relayed to the caller.
+     * Return an {@code Iterator} for the elements in this sequence.
      *
-     * @param pAction   The action to perform for each element.
-     *
-     * @throws NullPointerException if the {@code pAction} is null.
+     * @return  A new {@code Iterator}, never null.
      */
-    void forEach(@Nonnull Consumer<? super E> pAction);
+    @Override
+    @Nonnull
+    default Iterator<E> iterator()
+    {
+        return Iterators.sequenceIterator(this);
+    }
 }
