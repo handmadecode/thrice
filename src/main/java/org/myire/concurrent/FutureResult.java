@@ -1,14 +1,14 @@
 /*
- * Copyright 2011 Peter Franzen. All rights reserved.
+ * Copyright 2011, 2021 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.myire.concurrent;
 
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -30,7 +30,7 @@ import javax.annotation.concurrent.ThreadSafe;
  * @author <a href="mailto:peter@myire.org">Peter Franzen</a>
  */
 @ThreadSafe
-public class FutureResult<T> implements Future<T>
+public class FutureResult<T> implements PollableFuture<T>
 {
     private final CountDownLatch fLatch = new CountDownLatch(1);
     private final AtomicReference<Completion<T>> fCompletionRef = new AtomicReference<>();
@@ -160,6 +160,25 @@ public class FutureResult<T> implements Future<T>
 
 
     /**
+     * Return the result value if completed, otherwise return the specified absence value. If the
+     * completion of this instance has encountered any exception, that exception is thrown.
+     *
+     * @param pNotCompletedValue    The value to return if this instance is not completed.
+     *
+     * @return  The result value, if completed, otherwise {@code pNotCompletedValue}.
+     *
+     * @throws CancellationException if this instance has been cancelled.
+     * @throws CompletionException if this instance completed exceptionally.
+     */
+    @Override
+    public T getNow(T pNotCompletedValue)
+    {
+        Completion<T> aCompletion = fCompletionRef.get();
+        return aCompletion != null ? aCompletion.getCompletedResult() : pNotCompletedValue;
+    }
+
+
+    /**
      * Set the result of this {@code Future} unless it already has been completed.
      *
      * @param pResult   The result, possibly null.
@@ -283,6 +302,26 @@ public class FutureResult<T> implements Future<T>
         {
             if (fException != null)
                 throw new ExecutionException(fException);
+            else if (fWasCancelled)
+                throw new CancellationException();
+            else
+                return fResult;
+        }
+
+        /**
+         * Get the result with which the {@code Future} was completed.
+         *
+         * @return  The result, possibly null.
+         *
+         * @throws CompletionException      if the {@code Future} was completed by a thrown
+         *                                  exception.
+         * @throws CancellationException    if the {@code Future} was completed by a cancellation.
+         */
+        @Nullable
+        T getCompletedResult()
+        {
+            if (fException != null)
+                throw new CompletionException(fException);
             else if (fWasCancelled)
                 throw new CancellationException();
             else

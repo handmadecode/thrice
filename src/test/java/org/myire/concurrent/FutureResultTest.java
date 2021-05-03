@@ -1,11 +1,12 @@
 /*
- * Copyright 2011, 2013, 2016-2017, 2020 Peter Franzen. All rights reserved.
+ * Copyright 2011, 2013, 2016-2017, 2020, 2021 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.myire.concurrent;
 
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -17,7 +18,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 
 /**
@@ -469,6 +472,100 @@ public class FutureResultTest
         assertAll(
             () -> assertTrue(aGetAction.timedJoin(10, TimeUnit.SECONDS)),
             () -> assertNotNull(aGetAction.getCancellationException())
+        );
+    }
+
+
+    /**
+     * The {@code getNow} method should return the value specified in the call to {@code setResult}.
+     *
+     * @throws InterruptedException if the test is interrupted.
+     */
+    @Test
+    public void getNowReturnsValueFromSetResult() throws InterruptedException
+    {
+        // Given (a FutureResult is completed from another thread)
+        String aValue = "completed";
+        FutureResult<String> aResult = new FutureResult<>();
+        Thread aThread = new Thread(() -> aResult.setResult(aValue));
+        aThread.start();
+        aThread.join();
+
+        // When
+        String aReturnedValue = aResult.getNow(null);
+
+        // Then
+        assertEquals(aValue, aReturnedValue);
+    }
+
+
+    /**
+     * The {@code getNow} method should return the specified absence value if the
+     * {@code FutureResult} isn't completed.
+     */
+    @Test
+    public void getNowReturnsAbsenceValueIfNotCompleted()
+    {
+        // Given (a FutureResult that isn't completed)
+        String aAbsenceValue = "not completed";
+        FutureResult<String> aResult = new FutureResult<>();
+
+        // When
+        String aReturnedValue = aResult.getNow(aAbsenceValue);
+
+        // Then
+        assertEquals(aAbsenceValue, aReturnedValue);
+   }
+
+
+    /**
+     * The {@code getNow} method should throw a {@code CompletionException} when the
+     * {@code FutureResult} completed with an exception.
+     *
+     * @throws InterruptedException if the test is interrupted.
+     */
+    @Test
+    public void getNowThrowsWhenCompletedExceptionally() throws InterruptedException
+    {
+        // Given (a FutureResult is completed exceptionally from another thread)
+        Exception aException = new NullPointerException("That was sloppy");
+        FutureResult<String> aResult = new FutureResult<>();
+        Thread aThread = new Thread(() -> aResult.setException(aException));
+        aThread.start();
+        aThread.join();
+
+        // When
+        try
+        {
+            aResult.getNow("");
+            fail("getNow() does not throw CompletionException when completed exceptionally");
+        }
+        catch (CompletionException e)
+        {
+            assertSame(aException, e.getCause());
+        }
+    }
+
+
+    /**
+     * The {@code getNow} method should throw a {@code CancellationException} when the
+     * {@code FutureResult} has been canceled.
+     *
+     * @throws InterruptedException if the test is interrupted.
+     */
+    @Test
+    public void getNowThrowsWhenCanceled() throws InterruptedException
+    {
+        // Given (a FutureResult is cancelled from another thread)
+        FutureResult<String> aResult = new FutureResult<>();
+        Thread aThread = new Thread(() -> aResult.cancel(true));
+        aThread.start();
+        aThread.join();
+
+        // Then
+        assertThrows(
+            CancellationException.class,
+            () -> aResult.getNow(null)
         );
     }
 
