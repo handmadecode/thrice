@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2016 Peter Franzen. All rights reserved.
+ * Copyright 2011, 2016, 2021 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -11,6 +11,16 @@ import org.myire.annotation.Unreachable;
 /**
  * Utility methods for checking if a {@code byte} or a {@code char} is within the range of ASCII
  * characters ({@code 0x00-0x7F}} or a subrange thereof.
+ *<p>
+ * The implementations are based on bitwise logic and shift operations. This may or may not be more
+ * efficient than range endpoint comparisons, depending on the execution context. Benchmarks show
+ * that especially single range comparisons, e.g. {@code b>= 0x30 && b<=0x39} perform better than
+ * {@link #isAsciiDigit(byte)}) on some combinations of hardware, OS, and JVM, whereas the bit
+ * manipulation variant performs better in other runtime environments.
+ *<p>
+ * Before using the methods in this class for performance reasons it is recommended to measure if
+ * they are more efficient in the targeted runtime environment (including the code from where
+ * they will be called) than simple range comparison checks.
  *
  * @author <a href="mailto:peter@myire.org">Peter Franzen</a>
  */
@@ -186,7 +196,7 @@ public final class Ascii
     static public boolean isAsciiAZaz(char pChar)
     {
         // The high byte must be 0 and the two most significant bits in the low byte must be 01,
-        // otherwise the high nibble in the low bytre cannot be  0x4, 0x5, 0x6 or 0x7 (0100, 0101,
+        // otherwise the high nibble in the low byte cannot be  0x4, 0x5, 0x6 or 0x7 (0100, 0101,
         // 0110 or 0111).
         return (pChar & 0xffc0) == 0x40
                &&
@@ -239,5 +249,72 @@ public final class Ascii
                // Check if the 4 least significant bits are correct, see isAsciiDigit(byte) for an
                // explanation of this bit operation.
                ((1 << (pChar & 0x0f)) & 0x000003ff) != 0;
+    }
+
+
+    /**
+     * Check if a {@code byte} is in the ASCII range 0-9 ({@code 0x30-0x39}), A-F
+     * ({@code 0x41-0x46}), or a-f ({@code 0x61-0x66}).
+     *
+     * @param pByte The {@code byte} to check.
+     *
+     * @return  True if {@code pByte} is in one of the ranges {@code 0x30-0x39}, {@code 0x41-0x46}
+     *          or {@code 0x61-0x66}, false otherwise.
+     */
+    static public boolean isAsciiHexDigit(byte pByte)
+    {
+        return
+            (
+                // Check for 0x30-0x39, see isAsciiDigits(byte)
+                (pByte & 0xf0) == 0x30
+                &&
+                ((1 << (pByte & 0x0f)) & 0x000003ff) != 0
+            )
+            ||
+            (
+                // Check for 0x41-0x46 or 0x61-0x66.
+                // The high nibble must be either 0x4 or 0x6, i.e. have the pattern 01?0, and the
+                // low nibble must be in the range 0x1-0x6, i.e. have the pattern 0???, where ???
+                // cannot be 111 or 000.
+                (pByte & 0xd8) == 0x40
+                &&
+                // The five most significant bits are correct, the remaining three must be any value
+                // but 0 or 7. Set the bit corresponding to the value of these three bits in a
+                // 32-bit value and bitwise AND it with a 32-bit mask where bits 1-6 are set
+                // (0x0000007e). If the result is non-zero, the three bits have a valid value.
+                // Example 1: E (0x45) has the three least significant bits 101, shifting 1 left
+                // by 5 will set bit 5 (0x20) which ANDed with 0x7e is non-zero.
+                // Example 2: G (0x47) has the three least significant bits 111, shifting 1 left
+                // by 7 will set bit 7 (0x80) which ANDed with 0x7e is zero.
+                ((1 << (pByte & 0x07)) & 0x0000007e) != 0
+            );
+    }
+
+
+    /**
+     * Check if a {@code char} is in the ASCII range 0-9 ({@code 0x30-0x39}), A-F
+     * ({@code 0x41-0x46}), or a-f ({@code 0x61-0x66}).
+     *
+     * @param pChar The {@code char} to check.
+     *
+     * @return  True if {@code pChar} is in one of the ranges {@code 0x30-0x39}, {@code 0x41-0x46}
+     *          or {@code 0x61-0x66}, false otherwise.
+     */
+    static public boolean isAsciiHexDigit(char pChar)
+    {
+        return
+            (
+                // Check for 0x30-0x39, see isAsciiDigits(char)
+                (pChar & 0xfff0) == 0x30
+                &&
+                ((1 << (pChar & 0x0f)) & 0x000003ff) != 0
+            )
+            ||
+            (
+                // Check for 0x41-0x46 or 0x61-0x66, se isAsciiHexDigits(byte)
+                (pChar & 0xffd8) == 0x40
+                &&
+                ((1 << (pChar & 0x07)) & 0x0000007e) != 0
+            );
     }
 }
