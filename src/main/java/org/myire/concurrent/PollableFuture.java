@@ -36,7 +36,7 @@ public interface PollableFuture<T> extends Future<T>
      *
      * @throws CancellationException if this instance has been cancelled.
      * @throws CompletionException if this instance completed exceptionally.
-
+     *
      * @see java.util.concurrent.CompletableFuture#getNow(Object)
      */
     T getNow(T pNotCompletedValue);
