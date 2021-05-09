@@ -1,6 +1,7 @@
 # IntelliJ
 .idea
 *.iml
+out
 
 # Eclipse
 .project
@@ -12,5 +13,5 @@
 build
 target
 
-# OS X
+# macOS
 .DS_Store
