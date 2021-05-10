@@ -1,4 +1,7 @@
 <rule-violation-filters>
-  <rule-violation-filter lines="125" rules="CompareObjectsWithEquals" files=".*util/Strings.java"/>
-  <rule-violation-filter lines="102" rules="ConsecutiveLiteralAppends" files=".*util/Strings.java"/>
+  <rule-violation-filter lines="143" rules="PreserveStackTrace" files=".*concurrent/PollableFuture.java"/>
+  <rule-violation-filter lines="199"
+                         rules="(CompareObjectsWithEquals|UseEqualsToCompareStrings)"
+                         files=".*util/Strings.java"/>
+  <rule-violation-filter lines="165" rules="ConsecutiveLiteralAppends" files=".*util/Strings.java"/>
 </rule-violation-filters>

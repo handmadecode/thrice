@@ -1,5 +1,5 @@
 /*
- * Copyright 2009, 2012, 2017, 2020 Peter Franzen. All rights reserved.
+ * Copyright 2009, 2012, 2017, 2020-2021 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -20,11 +20,45 @@ import org.myire.annotation.Unreachable;
  */
 public final class Numbers
 {
+    // The digit in the tens position for values 0-99.
+    static private final char[] DIGIT_TENS =
+    {
+        '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+        '1', '1', '1', '1', '1', '1', '1', '1', '1', '1',
+        '2', '2', '2', '2', '2', '2', '2', '2', '2', '2',
+        '3', '3', '3', '3', '3', '3', '3', '3', '3', '3',
+        '4', '4', '4', '4', '4', '4', '4', '4', '4', '4',
+        '5', '5', '5', '5', '5', '5', '5', '5', '5', '5',
+        '6', '6', '6', '6', '6', '6', '6', '6', '6', '6',
+        '7', '7', '7', '7', '7', '7', '7', '7', '7', '7',
+        '8', '8', '8', '8', '8', '8', '8', '8', '8', '8',
+        '9', '9', '9', '9', '9', '9', '9', '9', '9', '9',
+    };
+
+    // The digit in the ones position for values 0-99.
+    static private final char[] DIGIT_ONES =
+    {
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    };
+
     // The positive ints that consist only of the digit '9'. The last element is Integer.MAX_VALUE.
     static private final int[] INT_NINES_ONLY = createIntNinesArray();
 
     // The positive longs that consist only of the digit '9'. The last element is Long.MAX_VALUE.
     static private final long[] LONG_NINES_ONLY = createLongNinesArray();
+
+    // The characters of the string representation of Integer.MIN_VALUE and Long.MIN_VALUE.
+    static private final char[] INTEGER_MIN_VALUE_CHARS = String.valueOf(Integer.MIN_VALUE).toCharArray();
+    static private final char[] LONG_MIN_VALUE_CHARS = String.valueOf(Long.MIN_VALUE).toCharArray();
 
 
     /**
@@ -34,6 +68,60 @@ public final class Numbers
     private Numbers()
     {
         // Empty default ctor, defined to override access scope.
+    }
+
+
+    /**
+     * Check if the specified {@code byte} value is {@code 0} or positive and throw an
+     * {@code IllegalArgumentException} if it isn't.
+     *<p>
+     * This method is similar to {@code java.util.Objects::requireNonNull}, meaning it is primarily
+     * intended for parameter validation as in the example below:
+     * <pre>
+     * public void foo(@Nonnegative byte pValue)
+     * {
+     *     fValue = Numbers.requireNonNegative(pValue);
+     * }
+     * </pre>
+     *
+     * @param pValue    The value to check for negativity.
+     *
+     * @return  {@code pValue} (if not negative).
+     *
+     * @throws IllegalArgumentException if {@code pValue} is negative.
+     */
+    static public byte requireNonNegative(@Nonnegative byte pValue)
+    {
+        if (pValue < 0)
+            throw new IllegalArgumentException(String.valueOf(pValue));
+        return pValue;
+    }
+
+
+    /**
+     * Check if the specified {@code short} value is {@code 0} or positive and throw an
+     * {@code IllegalArgumentException} if it isn't.
+     *<p>
+     * This method is similar to {@code java.util.Objects::requireNonNull}, meaning it is primarily
+     * intended for parameter validation as in the example below:
+     * <pre>
+     * public void foo(@Nonnegative short pValue)
+     * {
+     *     fValue = Numbers.requireNonNegative(pValue);
+     * }
+     * </pre>
+     *
+     * @param pValue    The value to check for negativity.
+     *
+     * @return  {@code pValue} (if not negative).
+     *
+     * @throws IllegalArgumentException if {@code pValue} is negative.
+     */
+    static public short requireNonNegative(@Nonnegative short pValue)
+    {
+        if (pValue < 0)
+            throw new IllegalArgumentException(String.valueOf(pValue));
+        return pValue;
     }
 
 
@@ -92,6 +180,62 @@ public final class Numbers
 
 
     /**
+     * Check if the specified {@code float} value is {@code 0.0f} or positive and throw an
+     * {@code IllegalArgumentException} if it isn't.
+     *<p>
+     * This method is similar to {@code java.util.Objects::requireNonNull}, meaning it is primarily
+     * intended for parameter validation as in the example below:
+     * <pre>
+     * public Foo(@Nonnegative float pValue)
+     * {
+     *     fValue = Numbers.requireNonNegative(pValue);
+     * }
+     * </pre>
+     *
+     * @param pValue    The value to check for negativity.
+     *
+     * @return  {@code pValue} if not negative.
+     *
+     * @throws IllegalArgumentException if {@code pValue} is negative.
+     */
+    static public float requireNonNegative(@Nonnegative float pValue)
+    {
+        // -0.0f == 0.0f, but Float.compare(-0.0f, 0.0f) == -1
+        if (Float.compare(pValue, 0.0f) < 0)
+            throw new IllegalArgumentException(String.valueOf(pValue));
+        return pValue;
+    }
+
+
+    /**
+     * Check if the specified {@code double} value is {@code 0.0d} or positive and throw an
+     * {@code IllegalArgumentException} if it isn't.
+     *<p>
+     * This method is similar to {@code java.util.Objects::requireNonNull}, meaning it is primarily
+     * intended for parameter validation as in the example below:
+     * <pre>
+     * public Foo(@Nonnegative double pValue)
+     * {
+     *     fValue = Numbers.requireNonNegative(pValue);
+     * }
+     * </pre>
+     *
+     * @param pValue    The value to check for negativity.
+     *
+     * @return  {@code pValue} if not negative.
+     *
+     * @throws IllegalArgumentException if {@code pValue} is negative.
+     */
+    static public double requireNonNegative(@Nonnegative double pValue)
+    {
+        // -0.0d == 0.0d, but Double.compare(-0.0d, 0.0d) == -1
+        if (Double.compare(pValue, 0.0d) < 0)
+            throw new IllegalArgumentException(String.valueOf(pValue));
+        return pValue;
+    }
+
+
+    /**
      * Wrapper around {@code Integer.parseInt()} that throws a checked exception instead of the
      * unchecked {@code NumberFormatException} in case of a malformed input string.
      *
@@ -140,6 +284,188 @@ public final class Numbers
         {
             throw new MalformedDataException(nfe);
         }
+    }
+
+
+    /**
+     * Format an {@code int} value by passing its digits to a {@code PutCharAtFunction}.
+     *
+     * @param pValue        The value to format.
+     * @param pDestination  The destination for the digits the formatting results in.
+     * @param pOffset       The index in {@code pDestination} to put the first digit at.
+     *
+     * @return  The number of digits passed to the destination.
+     *
+     * @throws NullPointerException if {@code pDestination} is null.
+     * @throws IndexOutOfBoundsException if {@code pOffset} is an invalid index in the destination,
+     *                                   or the number of digits in {@code pValue} is greater than
+     *                                   what can be put into the destination from {@code pOffset}.
+     */
+    static public int formatInt(
+        int pValue,
+        @Nonnull PutCharAtFunction pDestination,
+        @Nonnegative int pOffset)
+    {
+        // Integer.MIN_VALUE is a special case.
+        if (pValue == Integer.MIN_VALUE)
+        {
+            for (int i=0; i<INTEGER_MIN_VALUE_CHARS.length; i++)
+                pDestination.putCharAt(pOffset + i, INTEGER_MIN_VALUE_CHARS[i]);
+
+            return INTEGER_MIN_VALUE_CHARS.length;
+        }
+        else if (pValue < 0)
+        {
+            // Format negative values as the digits of the absolute value preceded by a minus sign.
+
+            pValue = -pValue;
+            int aNumAbsoluteDigits = countDigits(pValue);
+            formatPositiveInt(pValue, aNumAbsoluteDigits, pDestination, pOffset + 1);
+            pDestination.putCharAt(pOffset, '-');
+            return aNumAbsoluteDigits + 1;
+        }
+        else
+        {
+            int aNumDigits = countDigits(pValue);
+            formatPositiveInt(pValue, aNumDigits, pDestination, pOffset);
+            return aNumDigits;
+        }
+    }
+
+
+    /**
+     * Format a {@code long} value by passing its digits to a {@code PutCharAtFunction}.
+     *
+     * @param pValue        The value to format.
+     * @param pDestination  The destination for the digits the formatting results in.
+     * @param pOffset       The index in {@code pDestination} to put the first digit at.
+     *
+     * @return  The number of digits passed to the destination.
+     *
+     * @throws NullPointerException if {@code pDestination} is null.
+     * @throws IndexOutOfBoundsException if {@code pOffset} is an invalid index in the destination,
+     *                                   or the number of digits in {@code pValue} is greater than
+     *                                   what can be put into the destination from {@code pOffset}.
+     */
+    static public int formatLong(
+        long pValue,
+        @Nonnull PutCharAtFunction pDestination,
+        @Nonnegative int pOffset)
+    {
+        // This code is derived from java.lang.Long::getChars.
+
+        // Long.MIN_VALUE is a special case.
+        if (pValue == Long.MIN_VALUE)
+        {
+            for (int i=0; i<LONG_MIN_VALUE_CHARS.length; i++)
+                pDestination.putCharAt(pOffset + i, LONG_MIN_VALUE_CHARS[i]);
+
+            return LONG_MIN_VALUE_CHARS.length;
+        }
+
+        boolean aNegative = pValue < 0;
+        if (aNegative)
+            pValue = -pValue;
+
+        // Put the digits from "right to left", starting with the least significant digit at the
+        // last position of the fixed length.
+        int aNumDigits = countDigits(pValue);
+        int aLastPos = pOffset + aNumDigits - 1;
+        if (aNegative)
+            aLastPos++;
+
+        int aPos = aLastPos;
+
+        // Get the 2 least significant digits per iteration using longs until the quotient fits into
+        // an int.
+        long aQuotient;
+        int aRemainder;
+        while (pValue > Integer.MAX_VALUE)
+        {
+            // q = n/100, r = n - q * 100
+            // Substitute q*100 == q*(64 + 32 + 4) == q*64 + q*32 + q*4
+            aQuotient = pValue / 100;
+            aRemainder = (int) (pValue - ((aQuotient << 6) + (aQuotient << 5) + (aQuotient << 2)));
+
+            // The remainder is in the range 0-99 holding the two least significant digits.
+            pDestination.putCharAt(aPos--, DIGIT_ONES[aRemainder]);
+            pDestination.putCharAt(aPos--, DIGIT_TENS[aRemainder]);
+
+            pValue = aQuotient;
+        }
+
+        // Format the rest of the value as an int.
+        int aNumIntDigits = aNumDigits - (aLastPos - aPos);
+        if (aNegative)
+        {
+            formatPositiveInt((int) pValue, aNumIntDigits, pDestination, pOffset + 1);
+            pDestination.putCharAt(pOffset, '-');
+            return aNumDigits + 1;
+        }
+        else
+        {
+            formatPositiveInt((int) pValue, aNumIntDigits, pDestination, pOffset);
+            return aNumDigits;
+        }
+    }
+
+
+    /**
+     * Format a positive {@code int} value by passing its digits to a {@code PutCharAtFunction}.
+     *
+     * @param pValue        The {@code int} value to format.
+     * @param pNumDigits    The number of digits in the value.
+     * @param pDestination  The destination for the digits the formatting results in.
+     * @param pOffset       The index in {@code pDestination} to put the first digit at.
+     *
+     * @throws NullPointerException if {@code pDestination} is null.
+     * @throws IndexOutOfBoundsException if {@code pOffset} is an invalid index in the destination,
+     *                                   or {@code pOffset + pNumDigits} is greater than or equal to
+     *                                   the largest valid index in {@code pDestination}.
+     */
+    static private void formatPositiveInt(
+        int pValue,
+        @Nonnegative int pNumDigits,
+        @Nonnull PutCharAtFunction pDestination,
+        @Nonnegative int pOffset)
+    {
+        // This code is derived from java.lang.Long::getChars.
+        // Put the digits from "right to left", starting with the least significant digit at the
+        // last position counted from the offset.
+        int aPos = pOffset + pNumDigits - 1;
+
+        // Get the 2 least significant digits per iteration until the quotient fits into 16 bits.
+        int aQuotient, aRemainder;
+        while (pValue >= 65536)
+        {
+            // q = n/100, r = n - q * 100
+            // Substitute q*100 == q*(64 + 32 + 4) == q*64 + q*32 + q*4
+            aQuotient = pValue / 100;
+            aRemainder = pValue - ((aQuotient << 6) + (aQuotient << 5) + (aQuotient << 2));
+
+            // The remainder is in the range 0-99 holding the two least significant digits.
+            pDestination.putCharAt(aPos--, DIGIT_ONES[aRemainder]);
+            pDestination.putCharAt(aPos--, DIGIT_TENS[aRemainder]);
+
+            pValue = aQuotient;
+        }
+
+        // Get the least significant digit per iteration for values that fit into 16 bits
+        do
+        {
+            // n * 52429 / 2^^19 == n * 52429 / 524288 == n / 10 (for values less than 262149).
+            // See e.g. https://stackoverflow.com/questions/5558492/divide-by-10-using-bit-shifts#56217740
+            aQuotient = (pValue * 52429) >>> 19;
+
+            // r = n - q * 10
+            // Substitute q*10 == q*(8 + 2) == q*8 + q*2
+            aRemainder = pValue - ((aQuotient << 3) + (aQuotient << 1));
+
+            pDestination.putCharAt(aPos--, DIGIT_ONES[aRemainder]);
+
+            pValue = aQuotient;
+        }
+        while (pValue != 0);
     }
 
 

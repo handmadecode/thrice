@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2016, 2020 Peter Franzen. All rights reserved.
+ * Copyright 2011, 2016, 2020-2021 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -181,7 +181,7 @@ public class AsciiTest
         for (int c='z'+1; c<=0xffff; c++)
             if (Ascii.isAsciiAZaz((char) c))
                 fail("isAsciiAZaz returns true for 0x"+ Integer.toHexString(c));
-   }
+    }
 
 
     /**
@@ -221,5 +221,77 @@ public class AsciiTest
         for (int c='9'+1; c<=0xffff; c++)
             if (Ascii.isAsciiDigit((char) c))
                 fail("isAsciiDigit returns true for 0x"+ Integer.toHexString(c));
+    }
+
+
+    /**
+     * Test the {@code isAsciiHexDigit(byte)} method with all {@code byte} values.
+     */
+    @Test
+    public void testIsAsciiHexDigitByte()
+    {
+        for (int b=0; b<'0'; b++)
+            if (Ascii.isAsciiHexDigit((byte) b))
+                fail("isAsciiHexDigit returns true for 0x"+ Integer.toHexString(b));
+
+        for (int b='0'; b<='9'; b++)
+            if (!Ascii.isAsciiHexDigit((byte) b))
+                fail("isAsciiHexDigit returns false for 0x"+ Integer.toHexString(b));
+
+        for (int b='9'+1; b<'A'; b++)
+            if (Ascii.isAsciiHexDigit((byte) b))
+                fail("isAsciiHexDigit returns true for 0x"+ Integer.toHexString(b));
+
+        for (int b='A'; b<='F'; b++)
+            if (!Ascii.isAsciiHexDigit((byte) b))
+                fail("isAsciiHexDigit returns false for 0x"+ Integer.toHexString(b));
+
+        for (int b='F'+1; b<'a'; b++)
+            if (Ascii.isAsciiHexDigit((byte) b))
+                fail("isAsciiHexDigit returns true for 0x"+ Integer.toHexString(b));
+
+        for (int b='a'; b<='f'; b++)
+            if (!Ascii.isAsciiHexDigit((byte) b))
+                fail("isAsciiHexDigit returns false for 0x"+ Integer.toHexString(b));
+
+        for (int b='f'+1; b<=0xff; b++)
+            if (Ascii.isAsciiHexDigit((byte) b))
+                fail("isAsciiHexDigit returns true for 0x"+ Integer.toHexString(b));
+    }
+
+
+    /**
+     * Test the {@code isAsciiHexDigit(char)} method with all {@code char} values.
+     */
+    @Test
+    public void testIsAsciiHexDigitChar()
+    {
+        for (int c=0; c<'0'; c++)
+            if (Ascii.isAsciiHexDigit((char) c))
+                fail("isAsciiHexDigit returns true for 0x"+ Integer.toHexString(c));
+
+        for (int c='0'; c<='9'; c++)
+            if (!Ascii.isAsciiHexDigit((char) c))
+                fail("isAsciiHexDigit returns false for 0x"+ Integer.toHexString(c));
+
+        for (int c='9'+1; c<'A'; c++)
+            if (Ascii.isAsciiHexDigit((char) c))
+                fail("isAsciiHexDigit returns true for 0x"+ Integer.toHexString(c));
+
+        for (int c='A'; c<='F'; c++)
+            if (!Ascii.isAsciiHexDigit((char) c))
+                fail("isAsciiHexDigit returns false for 0x"+ Integer.toHexString(c));
+
+        for (int c='F'+1; c<'a'; c++)
+            if (Ascii.isAsciiHexDigit((char) c))
+                fail("isAsciiHexDigit returns true for 0x"+ Integer.toHexString(c));
+
+        for (int c='a'; c<='f'; c++)
+            if (!Ascii.isAsciiHexDigit((char) c))
+                fail("isAsciiHexDigit returns false for 0x"+ Integer.toHexString(c));
+
+        for (int c='f'+1; c<=0xffff; c++)
+            if (Ascii.isAsciiHexDigit((char) c))
+                fail("isAsciiHexDigit returns true for 0x"+ Integer.toHexString(c));
     }
 }

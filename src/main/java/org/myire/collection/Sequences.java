@@ -1,10 +1,12 @@
 /*
- * Copyright 2013, 2017 Peter Franzen. All rights reserved.
+ * Copyright 2013, 2017, 2021 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.myire.collection;
 
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 import static java.util.Objects.requireNonNull;
@@ -14,6 +16,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.myire.annotation.Unreachable;
+import static org.myire.util.Numbers.requireNonNegative;
 
 
 /**
@@ -100,7 +103,35 @@ public final class Sequences
     @Nonnull
     static public <T> Sequence<T> wrap(@Nonnull T[] pElements)
     {
-        return pElements.length == 0 ? emptySequence() : new ArraySequence<>(pElements);
+        return pElements.length == 0 ? emptySequence() : new ArraySequence<>(pElements, 0, pElements.length);
+    }
+
+
+    /**
+     * Create a {@code Sequence} that is a wrapper around a range of the elements in an array. The
+     * returned {@code Sequence} will reflect changes made to the elements in the array. Replacing
+     * an element in the array will also replace the element in the sequence.
+     *
+     * @param pElements The array to wrap.
+     * @param pOffset   The offset of the first element in the array that belongs to the sequence.
+     * @param pLength   The number of elements in the sequence, starting at the specified offset.
+     *
+     * @param <T>   The sequence's element type.
+     *
+     * @return  A new {@code Sequence}, never null.
+     *
+     * @throws NullPointerException if {@code pElements} is null.
+     * @throws IllegalArgumentException if {@code pOffset} is negative, or if {@code pLength} is
+     *                                  negative, or if {@code pOffset} is greater than
+     *                                  {@code pElements.length - pLength}.
+     */
+    @Nonnull
+    static public <T> Sequence<T> wrap(
+        @Nonnull T[] pElements,
+        @Nonnegative int pOffset,
+        @Nonnegative int pLength)
+    {
+        return pLength == 0 ? emptySequence() : new ArraySequence<>(pElements, pOffset, pLength);
     }
 
 
@@ -132,6 +163,13 @@ public final class Sequences
         {
             // Nothing do to in an empty sequence.
         }
+
+        @Override
+        @Nonnull
+        public Iterator<E> iterator()
+        {
+            return Collections.emptyIterator();
+        }
     }
 
 
@@ -143,7 +181,6 @@ public final class Sequences
     static private class SingletonSequence<E> implements Sequence<E>
     {
         private final E fElement;
-
 
         /**
          * Create a new {@code SingletonSequence}.
@@ -176,6 +213,13 @@ public final class Sequences
         public void forEach(@Nonnull Consumer<? super E> pAction)
         {
             pAction.accept(fElement);
+        }
+
+        @Override
+        @Nonnull
+        public Iterator<E> iterator()
+        {
+            return Iterators.singletonIterator(fElement);
         }
     }
 
@@ -218,51 +262,81 @@ public final class Sequences
         @Override
         public void forEach(@Nonnull Consumer<? super E> pAction)
         {
-            fList.iterator().forEachRemaining(pAction);
+            fList.forEach(pAction);
+        }
+
+        @Override
+        @Nonnull
+        public Iterator<E> iterator()
+        {
+            return Iterators.unmodifiableIterator(fList.iterator());
         }
     }
 
 
     /**
-     * Implementation of {@code Sequence} backed by an array.
+     * Implementation of {@code Sequence} backed by (a subrange of) an array.
      *
      * @param <E>   The sequence's element type.
      */
     static private class ArraySequence<E> implements Sequence<E>
     {
         private final E[] fElements;
+        private final int fOffset;
+        private final int fLength;
 
         /**
          * Create a new {@code ArraySequence}.
          *
          * @param pElements The underlying array. This reference will be used, no copy will be made.
+         * @param pOffset   The offset of the first element in the array that belongs to the
+         *                  sequence.
+         * @param pLength   The number of elements in the sequence, starting at the specified
+         *                  offset.
          *
          * @throws NullPointerException if {@code pElements} is null.
+         * @throws IllegalArgumentException if {@code pOffset} is negative, or if {@code pLength} is
+         *                                  negative, or if {@code pOffset} is greater than
+         *                                  {@code pElements.length - pLength}.
          */
-        ArraySequence(@Nonnull E[] pElements)
+        ArraySequence(@Nonnull E[] pElements, @Nonnegative int pOffset, @Nonnegative int pLength)
         {
             fElements = requireNonNull(pElements);
+            fOffset = requireNonNegative(pOffset);
+            fLength= requireNonNegative(pLength);
+            if (pOffset > pElements.length - pLength)
+                throw new IllegalArgumentException(pOffset + ">" + pElements.length + "-" + pLength);
         }
 
         @Override
         @Nonnegative
         public int size()
         {
-            return fElements.length;
+            return fLength;
         }
 
         @Override
         @Nullable
         public E elementAt(int pIndex)
         {
-            return fElements[pIndex];
+            if (pIndex >= 0 && pIndex < fLength)
+                return fElements[fOffset + pIndex];
+            else
+                throw new IndexOutOfBoundsException(String.valueOf(pIndex));
         }
 
         @Override
         public void forEach(@Nonnull Consumer<? super E> pAction)
         {
-            for (E aElement : fElements)
-                pAction.accept(aElement);
+            for (int i=0; i<fLength; i++)
+                pAction.accept(fElements[fOffset + i]);
+        }
+
+        @Override
+        @Nonnull
+        public Iterator<E> iterator()
+        {
+            return Iterators.arrayIterator(fElements, fOffset, fLength);
         }
     }
 }

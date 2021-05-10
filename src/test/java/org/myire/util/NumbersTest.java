@@ -1,5 +1,5 @@
 /*
- * Copyright 2009, 2012, 2016-2017, 2020 Peter Franzen. All rights reserved.
+ * Copyright 2009, 2012, 2016-2017, 2020-2021 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -22,6 +22,92 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class NumbersTest
 {
+    /**
+     * The {@code requireNonNegative(byte)} method should return a {@code 0} argument.
+     */
+    @Test
+    public void requireNonNegativeReturnsZeroByte()
+    {
+        // Given
+        byte aZero = 0;
+
+        // Then
+        assertEquals(aZero, Numbers.requireNonNegative(aZero));
+    }
+
+
+    /**
+     * The {@code requireNonNegative(byte)} method should return any positive argument.
+     */
+    @Test
+    public void requireNonNegativeReturnsPositiveByte()
+    {
+        // Given
+        byte aValue = randomPositiveByte();
+
+        // Then
+        assertEquals(aValue, Numbers.requireNonNegative(aValue));
+    }
+
+
+    /**
+     * The {@code requireNonNegative(byte)} method should throw an {@code IllegalArgumentException}
+     * for any negative argument.
+     */
+    @Test
+    public void requireNonNegativeThrowsForNegativeByte()
+    {
+        assertThrows(
+            IllegalArgumentException.class,
+            () ->
+                Numbers.requireNonNegative(randomNegativeByte())
+        );
+    }
+
+
+    /**
+     * The {@code requireNonNegative(short)} method should return a {@code 0} argument.
+     */
+    @Test
+    public void requireNonNegativeReturnsZeroShort()
+    {
+        // Given
+        short aZero = 0;
+
+        // Then
+        assertEquals(aZero, Numbers.requireNonNegative(aZero));
+    }
+
+
+    /**
+     * The {@code requireNonNegative(short)} method should return any positive argument.
+     */
+    @Test
+    public void requireNonNegativeReturnsPositiveShort()
+    {
+        // Given
+        short aValue = randomPositiveShort();
+
+        // Then
+        assertEquals(aValue, Numbers.requireNonNegative(aValue));
+    }
+
+
+    /**
+     * The {@code requireNonNegative(short)} method should throw an {@code IllegalArgumentException}
+     * for any negative argument.
+     */
+    @Test
+    public void requireNonNegativeThrowsForNegativeShort()
+    {
+        assertThrows(
+            IllegalArgumentException.class,
+            () ->
+                Numbers.requireNonNegative(randomNegativeShort())
+        );
+    }
+
+
     /**
      * The {@code requireNonNegative(int)} method should return a {@code 0} argument.
      */
@@ -96,6 +182,114 @@ public class NumbersTest
             IllegalArgumentException.class,
             () ->
                 Numbers.requireNonNegative(randomNegativeLong())
+        );
+    }
+
+
+    /**
+     * The {@code requireNonNegative(float)} method should return a {@code 0.0f} argument.
+     */
+    @Test
+    public void requireNonNegativeReturnsPositiveZeroFloat()
+    {
+        assertEquals(0.0f, Numbers.requireNonNegative(0.0f));
+    }
+
+
+    /**
+     * The {@code requireNonNegative(float)} method should throw an {@code IllegalArgumentException}
+     * for the argument {@code -0.0f}.
+     */
+    @Test
+    public void requireNonNegativeThrowsForNegativeZeroFloat()
+    {
+        assertThrows(
+            IllegalArgumentException.class,
+            () ->
+                Numbers.requireNonNegative(-0.0f)
+        );
+    }
+
+
+    /**
+     * The {@code requireNonNegative(float)} method should return any positive argument.
+     */
+    @Test
+    public void requireNonNegativeReturnsPositiveFloat()
+    {
+        // Given
+        float aValue = randomPositiveFloat();
+
+        // Then
+        assertEquals(aValue, Numbers.requireNonNegative(aValue));
+    }
+
+
+    /**
+     * The {@code requireNonNegative(float)} method should throw an {@code IllegalArgumentException}
+     * for any negative argument.
+     */
+    @Test
+    public void requireNonNegativeThrowsForNegativeFloat()
+    {
+        assertThrows(
+            IllegalArgumentException.class,
+            () ->
+                Numbers.requireNonNegative(randomNegativeFloat())
+        );
+    }
+
+
+    /**
+     * The {@code requireNonNegative(double)} method should return a {@code 0.0d} argument.
+     */
+    @Test
+    public void requireNonNegativeReturnsPositiveZeroDouble()
+    {
+        assertEquals(0.0d, Numbers.requireNonNegative(0.0d));
+    }
+
+
+    /**
+     * The {@code requireNonNegative(double)} method should throw an
+     * {@code IllegalArgumentException} for the argument {@code -0.0d}.
+     */
+    @Test
+    public void requireNonNegativeThrowsForNegativeZeroDouble()
+    {
+        assertThrows(
+            IllegalArgumentException.class,
+            () ->
+                Numbers.requireNonNegative(-0.0d)
+        );
+    }
+
+
+    /**
+     * The {@code requireNonNegative(double)} method should return any positive argument.
+     */
+    @Test
+    public void requireNonNegativeReturnsPositiveDouble()
+    {
+        // Given
+        double aValue = randomPositiveDouble();
+
+        // Then
+        assertEquals(aValue, Numbers.requireNonNegative(aValue));
+    }
+
+
+    /**
+     * The {@code requireNonNegative(double)} method should throw an
+     * {@code IllegalArgumentException} for any negative argument.
+     */
+    @Test
+    public void requireNonNegativeThrowsForNegativeDouble()
+    {
+        assertThrows(
+            IllegalArgumentException.class,
+            () ->
+                Numbers.requireNonNegative(randomNegativeDouble())
         );
     }
 
@@ -256,6 +450,150 @@ public class NumbersTest
             MalformedDataException.class,
             () ->
                 Numbers.parseLong("9223372036854775808")
+        );
+    }
+
+
+    /**
+     * The {@code formatInt} method should pass the digits of the int value to the specified
+     * destination and return the number of digits.
+     */
+    @Test
+    public void formatIntProducesTheCorrectResult()
+    {
+        for (int i=-65536; i<65536; i++)
+            formatIntProducesTheCorrectResult(i);
+        for (int i=0; i<65536; i++)
+            formatIntProducesTheCorrectResult(Integer.MIN_VALUE + i + 1);
+        for (int i=0; i<65536; i++)
+            formatIntProducesTheCorrectResult(Integer.MAX_VALUE - i);
+
+        for (int i=0; i<100; i++)
+            formatIntProducesTheCorrectResult(
+                ThreadLocalRandom.current().nextInt(Integer.MIN_VALUE + 1, Integer.MAX_VALUE));
+
+        formatIntProducesTheCorrectResult(Integer.MIN_VALUE);
+        formatIntProducesTheCorrectResult(Integer.MAX_VALUE);
+    }
+
+
+    static private void formatIntProducesTheCorrectResult(int pValue)
+    {
+        // Given (put the chars at a random offset in an array)
+        int aOffset =  ThreadLocalRandom.current().nextInt(8);
+        String aExpected = String.valueOf(pValue);
+        char[] aChars = new char[aExpected.length() + aOffset];
+        PutCharAtFunction aWriter = (i, c) -> aChars[i] = c;
+
+        // When
+        int aNumDigits = Numbers.formatInt(pValue, aWriter, aOffset);
+
+        // Then
+        assertAll(
+            () -> assertEquals(aExpected.length(), aNumDigits),
+            () -> assertEquals(aExpected, new String(aChars, aOffset, aNumDigits))
+        );
+    }
+
+
+    /**
+     * The {@code formatInt} method should throw a {@code NullPointerException} when passed a null
+     * destination argument.
+     */
+    @Test
+    public void formatIntThrowsForNullDestination()
+    {
+        assertThrows(
+            NullPointerException.class,
+            () ->
+                Numbers.formatInt(23, null, 0)
+        );
+    }
+
+
+    /**
+     * The {@code formatInt} method should throw a {@code IndexOutOfBoundsException} when passed a
+     * negative offset argument.
+     */
+    @Test
+    public void formatIntThrowsForNegativeOffset()
+    {
+        assertThrows(
+            IndexOutOfBoundsException.class,
+            () ->
+                Numbers.formatInt(23, new StringBuilder()::setCharAt, -1)
+        );
+    }
+
+
+    /**
+     * The {@code formatLong} method should pass the digits of the long value to the specified
+     * destination and return the number of digits.
+     */
+    @Test
+    public void formatLongProducesTheCorrectResult()
+    {
+        for (int i=-65536; i<65536; i++)
+            formatLongProducesTheCorrectResult(i);
+        for (int i=0; i<65536; i++)
+            formatLongProducesTheCorrectResult(Long.MIN_VALUE + i + 1);
+        for (int i=0; i<65536; i++)
+            formatLongProducesTheCorrectResult(Long.MAX_VALUE - i);
+
+        for (int i=0; i<100; i++)
+            formatLongProducesTheCorrectResult(
+                ThreadLocalRandom.current().nextLong(Long.MIN_VALUE + 1, Long.MAX_VALUE));
+
+        formatLongProducesTheCorrectResult(Long.MIN_VALUE);
+        formatLongProducesTheCorrectResult(Long.MAX_VALUE);
+    }
+
+
+    static private void formatLongProducesTheCorrectResult(long pValue)
+    {
+        // Given (put the chars at a random offset in an array)
+        int aOffset =  ThreadLocalRandom.current().nextInt(8);
+        String aExpected = String.valueOf(pValue);
+        char[] aChars = new char[aExpected.length() + aOffset];
+        PutCharAtFunction aWriter = (i, c) -> aChars[i] = c;
+
+        // When
+        int aNumDigits = Numbers.formatLong(pValue, aWriter, aOffset);
+
+        // Then
+        assertAll(
+            () -> assertEquals(aExpected.length(), aNumDigits),
+            () -> assertEquals(aExpected, new String(aChars, aOffset, aNumDigits))
+        );
+    }
+
+
+    /**
+     * The {@code formatLong} method should throw a {@code NullPointerException} when passed a null
+     * destination argument.
+     */
+    @Test
+    public void formatLongThrowsForNullDestination()
+    {
+        assertThrows(
+            NullPointerException.class,
+            () ->
+                Numbers.formatLong(23, null, 0)
+        );
+    }
+
+
+    /**
+     * The {@code formatLong} method should throw a {@code IndexOutOfBoundsException} when passed a
+     * negative offset argument.
+     */
+    @Test
+    public void formatLongThrowsForNegativeOffset()
+    {
+        assertThrows(
+            IndexOutOfBoundsException.class,
+            () ->
+                Numbers.formatLong(23, new StringBuilder()::setCharAt, -1)
         );
     }
 
@@ -519,9 +857,33 @@ public class NumbersTest
     }
 
 
+    static private byte randomPositiveByte()
+    {
+        return (byte) ThreadLocalRandom.current().nextInt(1, Byte.MAX_VALUE + 1);
+    }
+
+
+    static private byte randomNegativeByte()
+    {
+        return (byte) ThreadLocalRandom.current().nextInt(Byte.MIN_VALUE, 0);
+    }
+
+
+    static private short randomPositiveShort()
+    {
+        return (short) ThreadLocalRandom.current().nextInt(1, Short.MAX_VALUE + 1);
+    }
+
+
+    static private short randomNegativeShort()
+    {
+        return (short) ThreadLocalRandom.current().nextInt(Short.MIN_VALUE, 0);
+    }
+
+
     static private int randomPositiveInt()
     {
-        return ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE);
+        return ThreadLocalRandom.current().nextInt(1, Integer.MAX_VALUE);
     }
 
 
@@ -533,12 +895,36 @@ public class NumbersTest
 
     static private long randomPositiveLong()
     {
-        return ThreadLocalRandom.current().nextLong(Long.MAX_VALUE);
+        return ThreadLocalRandom.current().nextLong(1, Long.MAX_VALUE);
     }
 
 
     static private long randomNegativeLong()
     {
         return ThreadLocalRandom.current().nextLong(Long.MIN_VALUE + 1, 0);
+    }
+
+
+    static private float randomPositiveFloat()
+    {
+        return ThreadLocalRandom.current().nextFloat() * Float.MAX_VALUE;
+    }
+
+
+    static private float randomNegativeFloat()
+    {
+        return randomPositiveFloat() * -1;
+    }
+
+
+    static private double randomPositiveDouble()
+    {
+        return ThreadLocalRandom.current().nextDouble() * Double.MAX_VALUE;
+    }
+
+
+    static private double randomNegativeDouble()
+    {
+        return randomPositiveDouble() * -1;
     }
 }

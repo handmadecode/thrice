@@ -1,5 +1,5 @@
 /*
- * Copyright 2006, 2008-2009, 2016, 2020 Peter Franzen. All rights reserved.
+ * Copyright 2006, 2008-2009, 2016, 2020-2021 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -21,8 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class StringsTest
 {
     /**
-     * The {@code bytesToHexString} method should return the expected string for bytes
-     * {@code 0x00-0x0f}.
+     * The {@code bytesToHexString} and {@code bytesToCompactHexString} methods should return the
+     * expected string for bytes {@code 0x00-0x0f}.
      */
     @Test
     public void bytesToHexStringReturnsCorrectStringForBytes00To0F()
@@ -34,17 +35,23 @@ public class StringsTest
 
         // When
         String aHexString = Strings.bytesToHexString(aBytes);
+        String aCompactHexString = Strings.bytesToCompactHexString(aBytes);
 
         // Then
-        assertEquals(
-            "0x00 0x01 0x02 0x03 0x04 0x05 0x06 0x07 0x08 0x09 0x0a 0x0b 0x0c 0x0d 0x0e 0x0f",
-            aHexString);
+        assertAll(
+            () -> assertEquals(
+                "0x00 0x01 0x02 0x03 0x04 0x05 0x06 0x07 0x08 0x09 0x0a 0x0b 0x0c 0x0d 0x0e 0x0f",
+                aHexString),
+            () -> assertEquals(
+                "000102030405060708090a0b0c0d0e0f",
+                aCompactHexString)
+        );
     }
 
 
     /**
-     * The {@code bytesToHexString} method should return the expected string for bytes
-     * {@code 0xf0-0xff}.
+     * The {@code bytesToHexString} and {@code bytesToCompactHexString} methods should return the
+     * expected string for bytes {@code 0xf0-0xff}.
      */
     @Test
     public void bytesToHexStringReturnsCorrectStringForBytesF0ToFF()
@@ -56,17 +63,23 @@ public class StringsTest
 
         // When
         String aHexString = Strings.bytesToHexString(aBytes);
+        String aCompactHexString = Strings.bytesToCompactHexString(aBytes);
 
         // Then
-        assertEquals(
-            "0xff 0xfe 0xfd 0xfc 0xfb 0xfa 0xf9 0xf8 0xf7 0xf6 0xf5 0xf4 0xf3 0xf2 0xf1 0xf0",
-            aHexString);
+        assertAll(
+            () -> assertEquals(
+                "0xff 0xfe 0xfd 0xfc 0xfb 0xfa 0xf9 0xf8 0xf7 0xf6 0xf5 0xf4 0xf3 0xf2 0xf1 0xf0",
+                aHexString),
+            () -> assertEquals(
+                "fffefdfcfbfaf9f8f7f6f5f4f3f2f1f0",
+                aCompactHexString)
+        );
     }
 
 
     /**
-     * The {@code bytesToHexString} method should return the expected string for a sequence of
-     * non-consecutive bytes .
+     * The {@code bytesToHexString} and {@code bytesToCompactHexString} methods should return the
+     * expected string for a sequence of non-consecutive bytes .
      */
     @Test
     public void bytesToHexStringReturnsCorrectStringForNonConsecutiveBytes()
@@ -76,14 +89,23 @@ public class StringsTest
 
         // When
         String aHexString = Strings.bytesToHexString(aBytes);
+        String aCompactHexString = Strings.bytesToCompactHexString(aBytes);
 
         // Then
-        assertEquals("0x35 0x64 0x99 0x03 0xbb", aHexString);
+        assertAll(
+            () -> assertEquals(
+                "0x35 0x64 0x99 0x03 0xbb",
+                aHexString),
+            () -> assertEquals(
+                "35649903bb",
+                aCompactHexString)
+        );
     }
 
 
     /**
-     * The {@code bytesToHexString} method should return the expected string for a subarray.
+     * The {@code bytesToHexString} and {@code bytesToCompactHexString} methods should return the
+     * expected string for a subarray.
      */
     @Test
     public void bytesToHexStringReturnsCorrectStringForSubArray()
@@ -94,14 +116,16 @@ public class StringsTest
         // Then
         assertAll(
             () -> assertEquals("0x99 0x03 0xbb", Strings.bytesToHexString(aBytes, 2, 3)),
-            () -> assertEquals("0x64 0x99", Strings.bytesToHexString(aBytes, 1, 2))
+            () -> assertEquals("0x64 0x99", Strings.bytesToHexString(aBytes, 1, 2)),
+            () -> assertEquals("9903bb", Strings.bytesToCompactHexString(aBytes, 2, 3)),
+            () -> assertEquals("6499", Strings.bytesToCompactHexString(aBytes, 1, 2))
         );
     }
 
 
     /**
-     * The {@code bytesToHexString} method should return the expected string for an array of
-     * size 1.
+     * The {@code bytesToHexString} and {@code bytesToCompactHexString} methods should return the
+     * expected string for an array of size 1.
      */
     @Test
     public void bytesToHexStringReturnsCorrectStringForArrayOfLength1()
@@ -110,13 +134,16 @@ public class StringsTest
         byte[] aBytes = {(byte) 0x64};
 
         // Then
-        assertEquals("0x64", Strings.bytesToHexString(aBytes));
+        assertAll(
+            () -> assertEquals("0x64", Strings.bytesToHexString(aBytes)),
+            () -> assertEquals("64", Strings.bytesToCompactHexString(aBytes))
+        );
     }
 
 
     /**
-     * The {@code bytesToHexString} method should return the expected string for a subarray of
-     * size 1.
+     * The {@code bytesToHexString} and {@code bytesToCompactHexString} methods should return the
+     * expected string for a subarray of size 1.
      */
     @Test
     public void bytesToHexStringReturnsCorrectStringForSubArrayOfLength1()
@@ -125,103 +152,117 @@ public class StringsTest
         byte[] aBytes = {(byte) 0x35, (byte) 0x64, (byte) 0x99, (byte) 0x03, (byte) 0xbb};
 
         // Then
-        assertEquals("0xbb", Strings.bytesToHexString(aBytes, 4, 1));
+        assertAll(
+            () -> assertEquals("0xbb", Strings.bytesToHexString(aBytes, 4, 1)),
+            () -> assertEquals("bb", Strings.bytesToCompactHexString(aBytes, 4, 1))
+        );
     }
 
 
     /**
-     * The {@code bytesToHexString} method should return an empty string for an empty array.
+     * The {@code bytesToHexString} and {@code bytesToCompactHexString} methods should return an
+     * empty string for an empty array.
      */
     @Test
     public void bytesToHexStringReturnsEmptyStringForEmptyArray()
     {
-        // When
-        assertEquals("", Strings.bytesToHexString(new byte[0]));
+        assertAll(
+            () -> assertEquals("", Strings.bytesToHexString(new byte[0])),
+            () -> assertEquals("", Strings.bytesToCompactHexString(new byte[0]))
+        );
     }
 
 
     /**
-     * The {@code bytesToHexString} method should return an empty string for a subarray of size 0.
+     * The {@code bytesToHexString} and {@code bytesToCompactHexString} methods should return an
+     * empty string for a subarray of size 0.
      */
     @Test
     public void bytesToHexStringReturnsEmptyStringForEmptySubArray()
     {
-        // When
-        assertEquals("", Strings.bytesToHexString(new byte[20], 10, 0));
+        assertAll(
+            () -> assertEquals("", Strings.bytesToHexString(new byte[20], 10, 0)),
+            () -> assertEquals("", Strings.bytesToCompactHexString(new byte[20], 10, 0))
+        );
     }
 
 
     /**
-     * The {@code bytesToHexString} method should throw a {@code NullPointerException} for a null
-     * array.
+     * The {@code bytesToHexString} and {@code bytesToCompactHexString} methods should throw a
+     * {@code NullPointerException} for a null array.
      */
     @Test
     public void bytesToHexStringThrowsForNullArray()
     {
-        assertThrows(
-            NullPointerException.class,
-            () ->
-                Strings.bytesToHexString(null)
+        assertAll(
+            () -> assertThrows(NullPointerException.class,
+                               () -> Strings.bytesToHexString(null)),
+            () -> assertThrows(NullPointerException.class,
+                               () -> Strings.bytesToCompactHexString(null))
         );
     }
 
 
     /**
-     * The {@code bytesToHexString} method should throw a {@code NullPointerException} for a null
-     * subarray.
+     * The {@code bytesToHexString} and {@code bytesToCompactHexString} methods should throw a
+     * {@code NullPointerException} for a null subarray.
      */
     @Test
     public void bytesToHexStringThrowsForNullSubArray()
     {
-        assertThrows(
-            NullPointerException.class,
-            () ->
-                Strings.bytesToHexString(null, 0, 1)
+        assertAll(
+            () -> assertThrows(NullPointerException.class,
+                               () -> Strings.bytesToHexString(null, 0, 1)),
+            () -> assertThrows(NullPointerException.class,
+                               () -> Strings.bytesToCompactHexString(null, 0, 1))
         );
     }
 
 
     /**
-     * The {@code bytesToHexString} method should throw an {@code IndexOutOfBoundsException} for a
-     * negative offset.
+     * The {@code bytesToHexString} and {@code bytesToCompactHexString} methods should throw an
+     * {@code IndexOutOfBoundsException} for a negative offset.
      */
     @Test
     public void bytesToHexStringThrowsForNegativeOffset()
     {
-        assertThrows(
-            IndexOutOfBoundsException.class,
-            () ->
-                Strings.bytesToHexString(new byte[5], -1, 4)
+        assertAll(
+            () -> assertThrows(IndexOutOfBoundsException.class,
+                               () -> Strings.bytesToHexString(new byte[5], -1, 4)),
+            () -> assertThrows(IndexOutOfBoundsException.class,
+                               () -> Strings.bytesToCompactHexString(new byte[5], -1, 4))
         );
     }
 
 
     /**
-     * The {@code bytesToHexString} method should throw an {@code IndexOutOfBoundsException} when
-     * the offset plus length is too large.
+     * The {@code bytesToHexString} and {@code bytesToCompactHexString} methods should throw an
+     * {@code IndexOutOfBoundsException} when the offset plus length is too large.
      */
     @Test
     public void bytesToHexStringThrowsForTooLargeLength()
     {
-        assertThrows(
-            IndexOutOfBoundsException.class,
-            () ->
-                Strings.bytesToHexString(new byte[32], 29, 4)
+        assertAll(
+            () -> assertThrows(IndexOutOfBoundsException.class,
+                               () -> Strings.bytesToHexString(new byte[32], 29, 4)),
+            () -> assertThrows(IndexOutOfBoundsException.class,
+                               () -> Strings.bytesToCompactHexString(new byte[32], 29, 4))
         );
     }
 
 
     /**
-     * The {@code bytesToHexString} method should throw a {@code NegativeArraySizeException} for a
-     * negative length.
+     * The {@code bytesToHexString} and {@code bytesToCompactHexString} methods should throw a
+     * {@code NegativeArraySizeException} for a negative length.
      */
     @Test
     public void bytesToHexStringThrowsForNegativeLength()
     {
-        assertThrows(
-            NegativeArraySizeException.class,
-            () ->
-                Strings.bytesToHexString(new byte[256], 3, -5)
+        assertAll(
+            () -> assertThrows(NegativeArraySizeException.class,
+                               () -> Strings.bytesToHexString(new byte[256], 3, -5)),
+            () -> assertThrows(NegativeArraySizeException.class,
+                               () -> Strings.bytesToCompactHexString(new byte[256], 3, -5))
         );
     }
 
@@ -372,7 +413,32 @@ public class StringsTest
      * The {@code asString} method should return the default value when passed a null object.
      */
     @Test
-    public void asStringReturnsDefaultValueForNullObject()
+    public void asStringReturnsNullForNullObject()
+    {
+        assertNull(Strings.asString(null));
+    }
+
+
+    /**
+     * The {@code asString} method should return the value of {@code toString()} when passed a
+     * non-null object.
+     */
+    @Test
+    public void asStringReturnsObjectStringForNonNullObject()
+    {
+        // Given
+        String aChars = "someRandomChars";
+
+        // Then
+        assertEquals(aChars, Strings.asString(new StringBuilder(aChars)));
+    }
+
+
+    /**
+     * The {@code asString} method should return the default value when passed a null object.
+     */
+    @Test
+    public void asStringWithDefaultReturnsDefaultValueForNullObject()
     {
         // Given
         String aDefault = "When everything else fails";
@@ -388,7 +454,7 @@ public class StringsTest
      */
     @SuppressWarnings("boxing")
     @Test
-    public void asStringReturnsObjectStringForNonnullObject()
+    public void asStringWithDefaultReturnsObjectStringForNonNullObject()
     {
         // Given
         Integer aObject = 4711;
@@ -403,7 +469,7 @@ public class StringsTest
      * null object and a null default value.
      */
     @Test
-    public void asStringThrowsForNullDefaultValue()
+    public void asStringWithDefaultThrowsForNullDefaultValue()
     {
         assertThrows(
             NullPointerException.class,
