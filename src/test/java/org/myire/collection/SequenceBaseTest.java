@@ -95,7 +95,7 @@ abstract public class SequenceBaseTest
      * called with a negative index.
      */
     @Test
-    public void elementAThrowsForNegativeIndex()
+    public void elementAtThrowsForNegativeIndex()
     {
         // Given
         Sequence<Object> aSequence = createSequence(randomLengthElementArray());
@@ -113,7 +113,7 @@ abstract public class SequenceBaseTest
      * called with a too large index.
      */
     @Test
-    public void elementAThrowsForTooLargeIndex()
+    public void elementAtThrowsForTooLargeIndex()
     {
         // Given
         Object[] aElements = randomLengthElementArray();
@@ -132,7 +132,7 @@ abstract public class SequenceBaseTest
      * is called with any index.
      */
     @Test
-    public void elementAThrowsForEmptySequence()
+    public void elementAtThrowsForEmptySequence()
     {
         assertThrows(
             IndexOutOfBoundsException.class,

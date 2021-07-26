@@ -15,6 +15,9 @@ occasions.
 
 ## Release Notes
 
+### version 3.4
+* `GetByteAtFunction`, `PutByteAtFunction`, and `Utf8` added to `util` package.
+
 ### version 3.3
 
 * `PollableFuture` added to `concurrent` package.

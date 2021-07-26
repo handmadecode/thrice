@@ -155,7 +155,7 @@ public final class Sequences
         @Nullable
         public E elementAt(int pIndex)
         {
-            throw new IndexOutOfBoundsException("Index: "+pIndex);
+            throw new IndexOutOfBoundsException(String.valueOf(pIndex));
         }
 
         @Override
@@ -206,7 +206,7 @@ public final class Sequences
             if (pIndex == 0)
                 return fElement;
             else
-                throw new IndexOutOfBoundsException("Index: "+pIndex);
+                throw new IndexOutOfBoundsException(String.valueOf(pIndex));
         }
 
         @Override
