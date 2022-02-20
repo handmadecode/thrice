@@ -1,5 +1,5 @@
 /*
- * Copyright 2009, 2012, 2017, 2020-2021 Peter Franzen. All rights reserved.
+ * Copyright 2009, 2012, 2017, 2020-2022 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -232,6 +232,38 @@ public final class Numbers
         if (Double.compare(pValue, 0.0d) < 0)
             throw new IllegalArgumentException(String.valueOf(pValue));
         return pValue;
+    }
+
+
+    /**
+     * Check if the sub-range from {@code pOffset} (inclusive) to {@code pOffset + pLength}
+     * (exclusive) is within the bounds of the range from {@code 0} (inclusive) to
+     * {@code pUpperBound} (exclusive).
+     *<p>
+     * The sub-range is defined to be out of bounds if any of the following inequalities is true:
+     *<ul>
+     * <li>{@code pOffset < 0}</li>
+     * <li>{@code pLength < 0}</li>
+     * <li>{@code pOffset + pLength > pUpperBound}, taking into account integer overflow</li>
+     * <li>{@code pUpperBound < 0}, which is implied from the former inequalities</li>
+     *</ul>
+     * This is a backport of {@code java.util.Objects::checkFromIndexSize}.
+     *
+     * @param pOffset       The lower bound (inclusive) of the sub-range.
+     * @param pLength       The pLength of the sub-range.
+     * @param pUpperBound   The upper bound (exclusive) of the range.
+     *
+     * @return  {@code pOffset} if the sub-range within bounds of the range.
+     *
+     * @throws IndexOutOfBoundsException if the sub-range is out of bounds.
+     */
+    static public int requireRangeWithinBounds(int pOffset, int pLength, int pUpperBound)
+    {
+        if ((pUpperBound | pOffset | pLength) < 0 || pOffset > pUpperBound - pLength)
+            throw new IndexOutOfBoundsException(
+                "[" + pOffset + ", " + (pOffset+pLength) + "[ is not within [0, " + pUpperBound + '[');
+
+        return pOffset;
     }
 
 

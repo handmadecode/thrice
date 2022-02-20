@@ -1,5 +1,5 @@
 /*
- * Copyright 2009, 2012, 2016-2017, 2020-2021 Peter Franzen. All rights reserved.
+ * Copyright 2009, 2012, 2016-2017, 2020-2022 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -290,6 +290,155 @@ public class NumbersTest
             IllegalArgumentException.class,
             () ->
                 Numbers.requireNonNegative(randomNegativeDouble())
+        );
+    }
+
+
+    /**
+     * {@code requireRangeWithinBounds()} should approve a sub-range that is equal to the bounded
+     * range.
+     */
+    @Test
+    public void requireRangeWithinBoundsApprovesSubRangeEqualToRange()
+    {
+        // Given
+        int aOffset = 0;
+        int aLength = ThreadLocalRandom.current().nextInt(1, 16384);
+
+        // Then
+        assertEquals(aOffset, Numbers.requireRangeWithinBounds(aOffset, aLength, aOffset + aLength));
+    }
+
+
+    /**
+     * {@code requireRangeWithinBounds()} should approve a sub-range that starts at offset 0 and
+     * ends before the upper bound.
+     */
+    @Test
+    public void requireRangeWithinBoundsApprovesSubRangeStartingAtLowerBound()
+    {
+        // Given
+        int aOffset = 0;
+        int aUpperBound = ThreadLocalRandom.current().nextInt(1, 16384);
+
+        // Then
+        assertEquals(aOffset, Numbers.requireRangeWithinBounds(aOffset, aUpperBound - 1, aUpperBound));
+    }
+
+
+    /**
+     * {@code requireRangeWithinBounds()} should approve a sub-range that starts at an offset > 0
+     * and ends at the upper bound.
+     */
+    @Test
+    public void requireRangeWithinBoundsApprovesSubRangeEndingAtUpperBound()
+    {
+        // Given
+        int aOffset = ThreadLocalRandom.current().nextInt(1, 512);
+        int aUpperBound = ThreadLocalRandom.current().nextInt(aOffset + 1, 16384);
+
+        // Then
+        assertEquals(aOffset, Numbers.requireRangeWithinBounds(aOffset, aUpperBound - aOffset, aUpperBound));
+    }
+
+
+    /**
+     * {@code requireRangeWithinBounds()} should approve a sub-range that starts at an offset > 0
+     * and ends before the upper bound.
+     */
+    @Test
+    public void requireRangeWithinBoundsApprovesSubRangeInsideBounds()
+    {
+        // Given
+        int aOffset = ThreadLocalRandom.current().nextInt(1, 512);
+        int aUpperBound = ThreadLocalRandom.current().nextInt(aOffset + 1, 16384);
+
+        // Then
+        assertEquals(aOffset, Numbers.requireRangeWithinBounds(aOffset, aUpperBound - aOffset - 1, aUpperBound));
+    }
+
+
+    /**
+     * {@code requireRangeWithinBounds()} should approve a sub-range with length 0.
+     */
+    @Test
+    public void requireRangeWithinBoundsApprovesZeroLengthSubRange()
+    {
+        // Given
+        int aOffset = ThreadLocalRandom.current().nextInt(1, 512);
+
+        // Then
+        assertEquals(aOffset, Numbers.requireRangeWithinBounds(aOffset, 0, aOffset));
+    }
+
+
+    /**
+     * {@code requireRangeWithinBounds()} should throw for a negative offset.
+     */
+    @Test
+    public void requireRangeWithinBoundsThrowsForNegativeOffset()
+    {
+        assertThrows(
+            IndexOutOfBoundsException.class,
+            () ->
+                Numbers.requireRangeWithinBounds(-1, 18, 200)
+        );
+    }
+
+
+    /**
+     * {@code requireRangeWithinBounds()} should throw for a negative length.
+     */
+    @Test
+    public void requireRangeWithinBoundsThrowsForNegativeLength()
+    {
+        assertThrows(
+            IndexOutOfBoundsException.class,
+            () ->
+                Numbers.requireRangeWithinBounds(1, -1, 10)
+        );
+    }
+
+
+    /**
+     * {@code requireRangeWithinBounds()} should throw for a negative upper bound.
+     */
+    @Test
+    public void requireRangeWithinBoundsThrowsForNegativeUpperBound()
+    {
+        assertThrows(
+            IndexOutOfBoundsException.class,
+            () ->
+                Numbers.requireRangeWithinBounds(0, 1, -1)
+        );
+    }
+
+
+    /**
+     * {@code requireRangeWithinBounds()} should throw when offset + length is beyond the upper
+     * bound.
+     */
+    @Test
+    public void requireRangeWithinBoundsThrowsWhenLengthCrossesUpperBound()
+    {
+        assertThrows(
+            IndexOutOfBoundsException.class,
+            () ->
+                Numbers.requireRangeWithinBounds(1, 10, 10)
+        );
+    }
+
+
+    /**
+     * {@code requireRangeWithinBounds()} should throw when the offset is beyond the upper bound.
+     */
+    @Test
+    public void requireRangeWithinBoundsThrowsWhenOffsetIsBeyondUpperBound()
+    {
+        assertThrows(
+            IndexOutOfBoundsException.class,
+            () ->
+                Numbers.requireRangeWithinBounds(11, 0, 10)
         );
     }
 
