@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2009, 2017 Peter Franzen. All rights reserved.
+ * Copyright 2007-2009, 2017, 2022 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -41,9 +41,9 @@ public class Pair<X, Y>
     /**
      * Get the first member of the pair.
      *
-     * @return  The first member of the pair.
+     * @return  The first member of the pair. The returned value will be {@code null} if and only if
+     *          this instance was constructed with a {@code null} first member.
      */
-    @Nullable
     public X getFirst()
     {
         return fFirst;
@@ -53,9 +53,9 @@ public class Pair<X, Y>
     /**
      * Get the second member of the pair.
      *
-     * @return  The second member of the pair.
+     * @return  The second member of the pair. The returned value will be {@code null} if and only
+     *          if this instance was constructed with a {@code null} second member.
      */
-    @Nullable
     public Y getSecond()
     {
         return fSecond;

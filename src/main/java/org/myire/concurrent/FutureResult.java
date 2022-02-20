@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2021 Peter Franzen. All rights reserved.
+ * Copyright 2011, 2021-2022 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -110,7 +110,8 @@ public class FutureResult<T> implements PollableFuture<T>
     /**
      * Wait if necessary for the result to become available, and then return the result.
      *
-     * @return  The result, possibly null.
+     * @return  The result. The returned value will be {@code null} if and only if this instance was
+     *          completed with a {@code null} result.
      *
      * @throws InterruptedException     if the current thread was interrupted while waiting for the
      *                                  result.
@@ -120,7 +121,6 @@ public class FutureResult<T> implements PollableFuture<T>
      *                                  set.
      */
     @Override
-    @Nullable
     public T get() throws InterruptedException, ExecutionException
     {
         fLatch.await();
@@ -136,7 +136,8 @@ public class FutureResult<T> implements PollableFuture<T>
      *                  method will not wait at all.
      * @param pUnit     The time unit of {@code pTimeout}.
      *
-     * @return  The result, possibly null.
+     * @return  The result. The returned value will be {@code null} if and only if this instance was
+     *          completed with a {@code null} result.
      *
      * @throws InterruptedException     if the current thread was interrupted while waiting for the
      *                                  result.
@@ -148,7 +149,6 @@ public class FutureResult<T> implements PollableFuture<T>
      * @throws NullPointerException     if {@code pUnit} is null.
      */
     @Override
-    @Nullable
     public T get(long pTimeout, @Nonnull TimeUnit pUnit)
             throws InterruptedException, ExecutionException, TimeoutException
     {
@@ -165,13 +165,15 @@ public class FutureResult<T> implements PollableFuture<T>
      *
      * @param pNotCompletedValue    The value to return if this instance is not completed.
      *
-     * @return  The result value, if completed, otherwise {@code pNotCompletedValue}.
+     * @return  The result value, if completed, otherwise {@code pNotCompletedValue}. The returned
+     *          value will be {@code null} if this instance was completed with a {@code null} value
+     *          or if {@code pNotCompletedValue} is {@code null}.
      *
      * @throws CancellationException if this instance has been cancelled.
      * @throws CompletionException if this instance completed exceptionally.
      */
     @Override
-    public T getNow(T pNotCompletedValue)
+    public T getNow(@Nullable T pNotCompletedValue)
     {
         Completion<T> aCompletion = fCompletionRef.get();
         return aCompletion != null ? aCompletion.getCompletedResult() : pNotCompletedValue;
@@ -228,7 +230,8 @@ public class FutureResult<T> implements PollableFuture<T>
     /**
      * Get the result of this {@code Future}.
      *
-     * @return  The result, possibly null.
+     * @return  The result. The returned value will be {@code null} if and only if this instance was
+     *          completed with a {@code null} result.
      *
      * @throws ExecutionException       if the result of this future was an exception rather than a
      *                                  message.
@@ -236,7 +239,6 @@ public class FutureResult<T> implements PollableFuture<T>
      *                                  set.
      * @throws NullPointerException     if this {@code Future} has not been completed.
      */
-    @Nullable
     private T getResult() throws ExecutionException
     {
         return fCompletionRef.get().getResult();
@@ -291,13 +293,13 @@ public class FutureResult<T> implements PollableFuture<T>
         /**
          * Get the result with which the {@code Future} was completed.
          *
-         * @return  The result, possibly null.
+         * @return  The result. The returned value will be {@code null} if and only if this instance
+         *          was created with {@code null} result.
          *
          * @throws ExecutionException       if the {@code Future} was completed by a thrown
          *                                  exception.
          * @throws CancellationException    if the {@code Future} was completed by a cancellation.
          */
-        @Nullable
         T getResult() throws ExecutionException
         {
             if (fException != null)
@@ -311,13 +313,13 @@ public class FutureResult<T> implements PollableFuture<T>
         /**
          * Get the result with which the {@code Future} was completed.
          *
-         * @return  The result, possibly null.
+         * @return  The result. The returned value will be {@code null} if and only if this instance
+         *          was created with {@code null} result.
          *
          * @throws CompletionException      if the {@code Future} was completed by a thrown
          *                                  exception.
          * @throws CancellationException    if the {@code Future} was completed by a cancellation.
          */
-        @Nullable
         T getCompletedResult()
         {
             if (fException != null)

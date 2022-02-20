@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, 2017, 2021 Peter Franzen. All rights reserved.
+ * Copyright 2013, 2017, 2021-2022 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -9,7 +9,6 @@ import java.util.Iterator;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 
 /**
@@ -21,8 +20,7 @@ import javax.annotation.Nullable;
  * modified at any time by other threads. Implementations are generally not thread-safe; sharing a
  * sequence between threads requires external synchronization.
  *<p>
- * Whether or not duplicate elements and null elements are allowed is determined by the
- * implementation.
+ * Whether duplicate elements and null elements are allowed is determined by the implementation.
  *
  * @param <E>   The type of elements in the sequence.
  *
@@ -42,12 +40,13 @@ public interface Sequence<E> extends Iterable<E>
      *
      * @param pIndex    The index of the element to get.
      *
-     * @return  The element at the specified position in this sequence.
+     * @return  The element at the specified position in this sequence. The returned element may be
+     *          {@code null} if this sequence permits {@code null} elements.
      *
      * @throws IndexOutOfBoundsException    if {@code pIndex} is less than 0 or greater than or
      *                                      equal to {@link #size()}.
      */
-    @Nullable E elementAt(int pIndex);
+    E elementAt(int pIndex);
 
     /**
      * Return an {@code Iterator} for the elements in this sequence.

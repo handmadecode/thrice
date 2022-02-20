@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, 2017, 2021 Peter Franzen. All rights reserved.
+ * Copyright 2013, 2017, 2021-2022 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -152,7 +152,6 @@ public final class Sequences
         }
 
         @Override
-        @Nullable
         public E elementAt(int pIndex)
         {
             throw new IndexOutOfBoundsException(String.valueOf(pIndex));
@@ -200,7 +199,6 @@ public final class Sequences
         }
 
         @Override
-        @Nullable
         public E elementAt(int pIndex)
         {
             if (pIndex == 0)
@@ -253,7 +251,6 @@ public final class Sequences
         }
 
         @Override
-        @Nullable
         public E elementAt(int pIndex)
         {
             return fList.get(pIndex);
@@ -303,7 +300,7 @@ public final class Sequences
         {
             fElements = requireNonNull(pElements);
             fOffset = requireNonNegative(pOffset);
-            fLength= requireNonNegative(pLength);
+            fLength = requireNonNegative(pLength);
             if (pOffset > pElements.length - pLength)
                 throw new IllegalArgumentException(pOffset + ">" + pElements.length + "-" + pLength);
         }
@@ -316,7 +313,6 @@ public final class Sequences
         }
 
         @Override
-        @Nullable
         public E elementAt(int pIndex)
         {
             if (pIndex >= 0 && pIndex < fLength)
