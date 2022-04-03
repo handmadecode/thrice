@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, 2015, 2017, 2020, 2021 Peter Franzen. All rights reserved.
+ * Copyright 2013, 2015, 2017, 2020-2022 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -19,22 +19,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 /**
  * Unit tests for the {@code Sequence} implementation returned by {@link Sequences#wrap(List)}.
  */
-public class ListSequenceTest extends SequenceBaseTest
+public class ListSequenceTest extends ReferenceSequenceBaseTest
 {
     @Override
-    protected <T> Sequence<T> createEmptySequence()
+    protected Sequence<Object> createSequence(Object[] pElements)
     {
-        return Sequences.wrap(Collections.emptyList());
-    }
-
-
-    @Override
-    protected <T> Sequence<T> createSequence(T[] pElements)
-    {
-        if (pElements.length == 1)
-            return Sequences.wrap(Collections.singletonList(pElements[0]));
-        else
-            return Sequences.wrap(Arrays.asList(pElements));
+        return Sequences.wrap(Arrays.asList(pElements));
     }
 
 
@@ -51,8 +41,7 @@ public class ListSequenceTest extends SequenceBaseTest
         // When
         assertThrows(
             NullPointerException.class,
-            () ->
-                Sequences.wrap(aList)
+            () -> Sequences.wrap(aList)
         );
     }
 
@@ -68,6 +57,7 @@ public class ListSequenceTest extends SequenceBaseTest
         testWrappedListElements(new ArrayList<>());
         testWrappedListElements(Collections.singletonList(new Object()));
         testWrappedListElements(Arrays.asList(new Object(), new Object(), new Object(), new Object()));
+        testWrappedListElements(Arrays.asList(randomElementArray(randomCollectionLength())));
     }
 
 

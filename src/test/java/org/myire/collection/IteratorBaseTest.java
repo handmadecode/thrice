@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Peter Franzen. All rights reserved.
+ * Copyright 2021-2022 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -10,40 +10,45 @@ import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+
+import static org.myire.collection.CollectionTests.createMockConsumer;
 
 
 /**
  * Base test for {@code Iterator} implementations.
+ *
+ * @param <T>   The type of the elements returned by the iterator implementation being tested.
+ *
  */
-abstract public class IteratorBaseTest
+abstract public class IteratorBaseTest<T> extends CollectionBaseTest<T>
 {
     /**
      * Create an instance of the {@code Iterator} to test.
      *
      * @param pElements The elements to return from the iteration.
-     * @param <T>   The type of the elements.
      *
      * @return  A new {@code Iterator}.
      */
-    abstract protected <T> Iterator<T> createIterator(T[] pElements);
+    abstract protected Iterator<T> createIterator(T[] pElements);
 
 
-   /**
+    /**
      * The {@code hasNext} method should return false when the iteration contains no elements.
      */
     @Test
     public void hasNextReturnsFalseForEmptyIteration()
     {
         // Given
-        Iterator<Object> aIterator = createIterator(new Object[0]);
+        Iterator<T> aIterator = createIterator(randomElementArray(0));
 
         // Then
         assertFalse(aIterator.hasNext());
@@ -57,15 +62,18 @@ abstract public class IteratorBaseTest
     @Test
     public void hasNextReturnsTrueDuringIteration()
     {
-        // Given
-        String[] aStrings = {"a", "b", "c", "d", "e"};
-        Iterator<String> aIterator = createIterator(aStrings);
-
-        // Then
-        for (int i=0; i<aStrings.length; i++)
+        int[] aElementCounts = {1, randomCollectionLength()};
+        for (int aElementCount : aElementCounts)
         {
-            assertTrue(aIterator.hasNext());
-            aIterator.next();
+            // Given
+            Iterator<T> aIterator = createIterator(randomElementArray(aElementCount));
+
+            // Then
+            for (int i=0; i<aElementCount; i++)
+            {
+                assertTrue(aIterator.hasNext());
+                aIterator.next();
+            }
         }
     }
 
@@ -76,16 +84,19 @@ abstract public class IteratorBaseTest
     @Test
     public void hasNextReturnsFalseAtEndOfIteration()
     {
-        // Given
-        String[] aStrings = {"a", "b", "c", "d", "e"};
-        Iterator<String> aIterator = createIterator(aStrings);
+        int[] aElementCounts = {0, 1, randomCollectionLength()};
+        for (int aElementCount : aElementCounts)
+        {
+            // Given
+            Iterator<T> aIterator = createIterator(randomElementArray(aElementCount));
 
-        // When
-        for (int i=0; i<aStrings.length; i++)
-            aIterator.next();
+            // When
+            for (int i=0; i<aElementCount; i++)
+                aIterator.next();
 
-        // Then
-        assertFalse(aIterator.hasNext());
+            // Then
+            assertFalse(aIterator.hasNext());
+        }
     }
 
 
@@ -96,13 +107,17 @@ abstract public class IteratorBaseTest
     @Test
     public void nextReturnsTheExpectedElements()
     {
-        // Given
-        String[] aStrings = {"a", "b", "c", "d", "e"};
-        Iterator<String> aIterator = createIterator(aStrings);
+        int[] aElementCounts = {1, randomCollectionLength()};
+        for (int aElementCount : aElementCounts)
+        {
+            // Given
+            T[] aElements = randomElementArray(aElementCount);
+            Iterator<T> aIterator = createIterator(aElements);
 
-        // Then
-        for (String aString : aStrings)
-            assertSame(aString, aIterator.next());
+            // Then
+            for (T aElement : aElements)
+                assertEquals(aElement, aIterator.next());
+        }
     }
 
 
@@ -113,35 +128,22 @@ abstract public class IteratorBaseTest
     @Test
     public void nextThrowsAfterReturningAllElements()
     {
-        // Given
-        String[] aStrings = {"a", "b", "c", "d", "e"};
-        Iterator<String> aIterator = createIterator(aStrings);
-        for (int i=0; i< aStrings.length; i++)
-            aIterator.next();
+        int[] aElementCounts = {0, 1, randomCollectionLength()};
+        for (int aElementCount : aElementCounts)
+        {
+            // Given
+            Iterator<T> aIterator = createIterator(randomElementArray(aElementCount));
 
-        // Then
-        assertThrows(
-            NoSuchElementException.class,
-            aIterator::next
-        );
-    }
+            // Given (an exhausted iterator)
+            for (int i=0; i<aElementCount; i++)
+                aIterator.next();
 
-
-    /**
-     * The {@code next} method should throw a {@code NoSuchElementException} at any point for an
-     * empty iteration
-     */
-    @Test
-    public void nextThrowsForEmptyIteration()
-    {
-        // Given
-        Iterator<Object> aIterator = createIterator(new Object[0]);
-
-        // Then
-        assertThrows(
-            NoSuchElementException.class,
-            aIterator::next
-        );
+            // Then
+            assertThrows(
+                NoSuchElementException.class,
+                aIterator::next
+            );
+        }
     }
 
 
@@ -152,19 +154,22 @@ abstract public class IteratorBaseTest
     @Test
     public void removeThrowsDuringIteration()
     {
-        // Given
-        String[] aStrings = {"a", "b", "c"};
-        Iterator<String> aIterator = createIterator(aStrings);
-
-        while (aIterator.hasNext())
+        int[] aElementCounts = {1, randomCollectionLength()};
+        for (int aElementCount : aElementCounts)
         {
-            aIterator.next();
+            // Given
+            Iterator<T> aIterator = createIterator(randomElementArray(aElementCount));
 
-            // Then
-            assertThrows(
-                UnsupportedOperationException.class,
-                aIterator::remove
-            );
+            while (aIterator.hasNext())
+            {
+                aIterator.next();
+
+                // Then
+                assertThrows(
+                    UnsupportedOperationException.class,
+                    aIterator::remove
+                );
+            }
         }
     }
 
@@ -176,15 +181,18 @@ abstract public class IteratorBaseTest
     @Test
     public void removeThrowsAtStartOfIteration()
     {
-        // Given
-        String[] aStrings = {"a", "b", "c"};
-        Iterator<String> aIterator = createIterator(aStrings);
+        int[] aElementCounts = {0, 1, randomCollectionLength()};
+        for (int aElementCount : aElementCounts)
+        {
+            // Given
+            Iterator<T> aIterator = createIterator(randomElementArray(aElementCount));
 
-        // Then
-        assertThrows(
-            UnsupportedOperationException.class,
-            aIterator::remove
-        );
+            // Then
+            assertThrows(
+                UnsupportedOperationException.class,
+                aIterator::remove
+            );
+        }
     }
 
 
@@ -195,17 +203,20 @@ abstract public class IteratorBaseTest
     @Test
     public void removeThrowsAtEndOfIteration()
     {
-        // Given
-        String[] aStrings = {"a", "b", "c"};
-        Iterator<String> aIterator = createIterator(aStrings);
-        for (int i=0; i< aStrings.length; i++)
-            aIterator.next();
+        int[] aElementCounts = {1, randomCollectionLength()};
+        for (int aElementCount : aElementCounts)
+        {
+            // Given
+            Iterator<T> aIterator = createIterator(randomElementArray(aElementCount));
+            for (int i=0; i<aElementCount; i++)
+                aIterator.next();
 
-        // Then
-        assertThrows(
-            UnsupportedOperationException.class,
-            aIterator::remove
-        );
+            // Then
+            assertThrows(
+                UnsupportedOperationException.class,
+                aIterator::remove
+            );
+        }
     }
 
 
@@ -216,19 +227,24 @@ abstract public class IteratorBaseTest
     @Test
     public void forEachRemainingProcessesAllElements()
     {
-        // Given
-        String[] aStrings = {"a", "b", "c", "d", "e"};
-        Consumer<String> aAction = mock(StringConsumer.class);
-        Iterator<String> aIterator = createIterator(aStrings);
+        int[] aElementCounts = {0, 1, randomCollectionLength()};
+        for (int aElementCount : aElementCounts)
+        {
+            // Given
+            T[] aElements = randomElementArray(aElementCount);
+            Iterator<T> aIterator = createIterator(aElements);
+            Consumer<T> aAction = createMockConsumer();
 
-        // When
-        aIterator.forEachRemaining(aAction);
+            // When
+            aIterator.forEachRemaining(aAction);
 
-        // Then
-        for (String aString : aStrings)
-            verify(aAction).accept(aString);
+            // Then
+            for (T aElement : aElements)
+                verify(aAction).accept(eq(aElement));
 
-        verifyNoMoreInteractions(aAction);
+            verifyNoMoreInteractions(aAction);
+            assertFalse(aIterator.hasNext());
+        }
     }
 
 
@@ -240,10 +256,12 @@ abstract public class IteratorBaseTest
     public void forEachRemainingProcessesOnlyRemainingElements()
     {
         // Given
-        String[] aStrings = {"a", "b", "c", "d", "e", "f"};
-        Consumer<String> aAction = mock(StringConsumer.class);
-        Iterator<String> aIterator = createIterator(aStrings);
-        int aNumCallsToNext = 2;
+        T[] aElements = randomElementArray(randomCollectionLength());
+        Iterator<T> aIterator = createIterator(aElements);
+        Consumer<T> aAction = createMockConsumer();
+
+        // Given (some elements have been returned by next())
+        int aNumCallsToNext = aElements.length > 2 ? 2 : 1;
         for (int i=0; i<aNumCallsToNext; i++)
             aIterator.next();
 
@@ -251,29 +269,11 @@ abstract public class IteratorBaseTest
         aIterator.forEachRemaining(aAction);
 
         // Then
-        for (int i=aNumCallsToNext; i<aStrings.length; i++)
-            verify(aAction).accept(aStrings[i]);
+        for (int i=aNumCallsToNext; i<aElements.length; i++)
+            verify(aAction).accept(eq(aElements[i]));
 
         verifyNoMoreInteractions(aAction);
-    }
-
-
-    /**
-     * The {@code forEachRemaining} method should not invoke the specified action for an empty
-     * iteration.
-     */
-    @Test
-    public void forEachRemainingDoesNothingForEmptyIteration()
-    {
-        // Given
-        Consumer<String> aAction = mock(StringConsumer.class);
-        Iterator<String> aIterator = createIterator(new String[0]);
-
-        // When
-        aIterator.forEachRemaining(aAction);
-
-        // Then
-        verifyNoMoreInteractions(aAction);
+        assertFalse(aIterator.hasNext());
     }
 
 
@@ -284,26 +284,21 @@ abstract public class IteratorBaseTest
     @Test
     public void forEachRemainingDoesNothingForExhaustedIterator()
     {
-        // Given
-        Consumer<String> aAction = mock(StringConsumer.class);
-        String[] aStrings = {"a", "b", "c"};
-        Iterator<String> aIterator = createIterator(aStrings);
-        for (int i=0; i< aStrings.length; i++)
-            aIterator.next();
+        int[] aElementCounts = {0, 1, randomCollectionLength()};
+        for (int aElementCount : aElementCounts)
+        {
+            // Given
+            Iterator<T> aIterator = createIterator(randomElementArray(aElementCount));
+            Consumer<T> aAction = createMockConsumer();
+            for (int i=0; i<aElementCount; i++)
+                aIterator.next();
 
-        // When
-        aIterator.forEachRemaining(aAction);
+            // When
+            aIterator.forEachRemaining(aAction);
 
-        // Then
-        verifyNoMoreInteractions(aAction);
-    }
-
-
-    /**
-     * For type-safe mocking.
-     */
-    interface StringConsumer extends Consumer<String>
-    {
-        // No additional methods.
+            // Then
+            verifyNoInteractions(aAction);
+            assertFalse(aIterator.hasNext());
+        }
     }
 }

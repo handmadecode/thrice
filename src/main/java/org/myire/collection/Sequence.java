@@ -43,10 +43,10 @@ public interface Sequence<E> extends Iterable<E>
      * @return  The element at the specified position in this sequence. The returned element may be
      *          {@code null} if this sequence permits {@code null} elements.
      *
-     * @throws IndexOutOfBoundsException    if {@code pIndex} is less than 0 or greater than or
-     *                                      equal to {@link #size()}.
+     * @throws IndexOutOfBoundsException if {@code pIndex} is less than 0 or greater than or equal
+     *                                   to {@link #size()}.
      */
-    E elementAt(int pIndex);
+    E elementAt(@Nonnegative int pIndex);
 
     /**
      * Return an {@code Iterator} for the elements in this sequence.
