@@ -1,37 +1,38 @@
 /*
- * Copyright 2013, 2015, 2017, 2020, 2021 Peter Franzen. All rights reserved.
+ * Copyright 2013, 2015, 2017, 2020-2022 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.myire.collection;
+package org.myire.collection.singleton;
 
 import java.util.Iterator;
 import java.util.function.Consumer;
 
+import org.myire.collection.Sequence;
+import org.myire.collection.Sequences;
+
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+
+import static org.myire.collection.CollectionTests.createMockConsumer;
 
 
 /**
  * Unit tests for the {@code Sequence} implementation returned by
  * {@link Sequences#singleton(Object)}.
  */
-public class SingletonSequenceTest
+public class SingletonSequenceTest extends SingletonSequenceBaseTest<Object>
 {
-    /**
-     * A sequence returned by {@code Sequences.singleton()} should have size 1.
-     */
-    @Test
-    public void singletonSequenceHasSize1()
+    @Override
+    protected Sequence<Object> createSingletonSequence()
     {
-        assertEquals(1, Sequences.singleton(null).size());
+        return Sequences.singleton(new Object());
     }
 
 
@@ -62,36 +63,6 @@ public class SingletonSequenceTest
 
 
     /**
-     * A sequence returned by {@code Sequences.singleton()} should throw an
-     * {@code IndexOutOfBoundsException} when {@code elementAt()} is called with a negative index.
-     */
-    @Test
-    public void singletonSequenceThrowsForElementAtNegativeIndex()
-    {
-        assertThrows(
-            IndexOutOfBoundsException.class,
-            () ->
-                Sequences.singleton("").elementAt(-1)
-        );
-    }
-
-
-    /**
-     * A sequence returned by {@code Sequences.singleton()} should throw an
-     * {@code IndexOutOfBoundsException} when {@code elementAt()} is called with a positive index.
-     */
-    @Test
-    public void singletonSequenceThrowsForElementAtPositiveIndex()
-    {
-        assertThrows(
-            IndexOutOfBoundsException.class,
-            () ->
-                Sequences.singleton("").elementAt(1)
-        );
-    }
-
-
-    /**
      * A sequence returned by {@code Sequences.singleton()} should invoke the action on its element
      * when {@code forEach()} is called.
      */
@@ -100,13 +71,13 @@ public class SingletonSequenceTest
     {
         // Given
         Object aElement = new Object();
-        Consumer<Object> aConsumer = SequenceBaseTest.newMockConsumer();
+        Consumer<Object> aConsumer = createMockConsumer();
 
         // When
         Sequences.singleton(aElement).forEach(aConsumer);
 
         // Then
-        verify(aConsumer).accept(aElement);
+        verify(aConsumer).accept(same(aElement));
         verifyNoMoreInteractions(aConsumer);
     }
 

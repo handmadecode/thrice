@@ -1,37 +1,36 @@
 /*
- * Copyright 2021 Peter Franzen. All rights reserved.
+ * Copyright 2021-2022 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.myire.collection;
+package org.myire.collection.array;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.myire.collection.Sequence;
+import org.myire.collection.Sequences;
+
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.myire.collection.ReferenceSequenceBaseTest;
 
 
 /**
  * Unit tests for the {@code Sequence} implementation returned by
  * {@link Sequences#wrap(Object[], int, int)}.
  */
-public class ArrayRangeSequenceTest extends SequenceBaseTest
+public class ArrayRangeSequenceTest extends ReferenceSequenceBaseTest
 {
     @Override
-    @SuppressWarnings("unchecked")
-    protected <T> Sequence<T> createEmptySequence()
+    protected Sequence<Object> createSequence(Object[] pElements)
     {
-        return Sequences.wrap((T[]) new Object[8], 4, 0);
-    }
+        if (pElements.length == 0)
+            return Sequences.wrap(new Object[8], 4, 0);
 
-
-    @Override
-    protected <T> Sequence<T> createSequence(T[] pElements)
-    {
         // Create an array twice the length of the elements to wrap over and put the elements at a
         // random range in that array.
-        @SuppressWarnings("unchecked")
-        T[] aArray = (T[]) new Object[pElements.length * 2];
+        Object[] aArray = new Object[pElements.length * 2];
         int aOffset = ThreadLocalRandom.current().nextInt(pElements.length + 1);
         System.arraycopy(pElements, 0, aArray, aOffset, pElements.length);
         return Sequences.wrap(aArray, aOffset, pElements.length);
@@ -64,7 +63,7 @@ public class ArrayRangeSequenceTest extends SequenceBaseTest
     public void wrapThrowsForNegativeOffsetArgument()
     {
         assertThrows(
-            IllegalArgumentException.class,
+            IndexOutOfBoundsException.class,
             () -> Sequences.wrap(new Object[1], -1, 1)
         );
     }
@@ -78,7 +77,7 @@ public class ArrayRangeSequenceTest extends SequenceBaseTest
     public void factoryMethodThrowsForNegativeLengthArgument()
     {
         assertThrows(
-            IllegalArgumentException.class,
+            IndexOutOfBoundsException.class,
             () -> Sequences.wrap(new Object[1], 0, -1)
         );
     }
@@ -92,7 +91,7 @@ public class ArrayRangeSequenceTest extends SequenceBaseTest
     public void factoryMethodThrowsForInvalidOffsetAndLength()
     {
         assertThrows(
-            IllegalArgumentException.class,
+            IndexOutOfBoundsException.class,
             () -> Sequences.wrap(new Object[2], 1, 2)
         );
     }

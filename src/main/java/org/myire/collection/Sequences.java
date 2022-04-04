@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, 2017, 2021 Peter Franzen. All rights reserved.
+ * Copyright 2013, 2017, 2021-2022 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.myire.annotation.Unreachable;
-import static org.myire.util.Numbers.requireNonNegative;
+import static org.myire.util.Numbers.requireRangeWithinBounds;
 
 
 /**
@@ -103,7 +103,7 @@ public final class Sequences
     @Nonnull
     static public <T> Sequence<T> wrap(@Nonnull T[] pElements)
     {
-        return pElements.length == 0 ? emptySequence() : new ArraySequence<>(pElements, 0, pElements.length);
+        return wrap(pElements, 0, pElements.length);
     }
 
 
@@ -121,9 +121,9 @@ public final class Sequences
      * @return  A new {@code Sequence}, never null.
      *
      * @throws NullPointerException if {@code pElements} is null.
-     * @throws IllegalArgumentException if {@code pOffset} is negative, or if {@code pLength} is
-     *                                  negative, or if {@code pOffset} is greater than
-     *                                  {@code pElements.length - pLength}.
+     * @throws IndexOutOfBoundsException if {@code pOffset} is negative, or if {@code pLength} is
+     *                                   negative, or if {@code pOffset} is greater than
+     *                                   {@code pElements.length - pLength}.
      */
     @Nonnull
     static public <T> Sequence<T> wrap(
@@ -131,7 +131,12 @@ public final class Sequences
         @Nonnegative int pOffset,
         @Nonnegative int pLength)
     {
-        return pLength == 0 ? emptySequence() : new ArraySequence<>(pElements, pOffset, pLength);
+        if (pLength == 0)
+            return emptySequence();
+        else if (pLength == 1)
+            return singleton(pElements[pOffset]);
+        else
+            return new ArraySequence<>(pElements, pOffset, pLength);
     }
 
 
@@ -152,7 +157,6 @@ public final class Sequences
         }
 
         @Override
-        @Nullable
         public E elementAt(int pIndex)
         {
             throw new IndexOutOfBoundsException(String.valueOf(pIndex));
@@ -200,7 +204,6 @@ public final class Sequences
         }
 
         @Override
-        @Nullable
         public E elementAt(int pIndex)
         {
             if (pIndex == 0)
@@ -253,7 +256,6 @@ public final class Sequences
         }
 
         @Override
-        @Nullable
         public E elementAt(int pIndex)
         {
             return fList.get(pIndex);
@@ -295,17 +297,15 @@ public final class Sequences
          *                  offset.
          *
          * @throws NullPointerException if {@code pElements} is null.
-         * @throws IllegalArgumentException if {@code pOffset} is negative, or if {@code pLength} is
-         *                                  negative, or if {@code pOffset} is greater than
-         *                                  {@code pElements.length - pLength}.
+         * @throws IndexOutOfBoundsException if {@code pOffset} is negative, or if {@code pLength}
+         *                                   is negative, or if {@code pOffset} is greater than
+         *                                   {@code pElements.length - pLength}.
          */
         ArraySequence(@Nonnull E[] pElements, @Nonnegative int pOffset, @Nonnegative int pLength)
         {
             fElements = requireNonNull(pElements);
-            fOffset = requireNonNegative(pOffset);
-            fLength= requireNonNegative(pLength);
-            if (pOffset > pElements.length - pLength)
-                throw new IllegalArgumentException(pOffset + ">" + pElements.length + "-" + pLength);
+            fOffset = requireRangeWithinBounds(pOffset, pLength, pElements.length);
+            fLength = pLength;
         }
 
         @Override
@@ -316,7 +316,6 @@ public final class Sequences
         }
 
         @Override
-        @Nullable
         public E elementAt(int pIndex)
         {
             if (pIndex >= 0 && pIndex < fLength)

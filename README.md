@@ -15,6 +15,16 @@ occasions.
 
 ## Release Notes
 
+### version 3.5
+* Primitive specializations of `Sequence` added.
+* `PrimitiveIterators` factory class for `java.util.PrimitiveIterator` implementations added.
+* `AlphaCodes` and `Nothing` added to `util` package.
+* `Numbers.requireRangeWithinBounds()` added.
+* Methods with return values that may be null depending on the context are no longer annotated with
+  `javax.annotation.Nullable`. Some tools and IDEs no longer use that annotation in its original
+  sense, but as an equivalent to `javax.annotation.CheckForNull`, which may cause false
+  `NullPointerException` warnings.
+
 ### version 3.4
 * `GetByteAtFunction`, `PutByteAtFunction`, and `Utf8` added to `util` package.
 

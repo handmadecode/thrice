@@ -1,5 +1,5 @@
 /*
- * Copyright 2009, 2016 Peter Franzen. All rights reserved.
+ * Copyright 2009, 2016, 2022 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -33,12 +33,12 @@ import javax.annotation.concurrent.NotThreadSafe;
  * however easily add this by comparing the FSM's current state to an externally defined set of
  * final states when there is no more input.
  *<p>
- * Whether or not {@code null} is valid state or a valid symbol in the input and output alphabets is
- * a property of the next and output functions. The FSM itself puts no restrictions on using
+ * Whether {@code null} is valid state or a valid symbol in the input and output alphabets is a
+ * property of the next and output functions. The FSM itself puts no restrictions on using
  * {@code null}.
  *<p>
  * The possible states, input alphabet, and output alphabet are all parametrized types. There are
- * no restrictions on these types, but the fact that that the sets are finite may imply that using
+ * no restrictions on these types, but the fact that the sets are finite may imply that using
  * {@code Enum} types is a good choice.
  *<p>
  * Instances of this class are <b>not</b> safe for use by multiple threads without external
@@ -83,9 +83,9 @@ public class FiniteStateMachine<S, I, O>
     /**
      * Get the current state of the FSM.
      *
-     * @return  The current state of the FSM.
+     * @return  The current state of the FSM. The returned value may be {@code null} if the next
+     *          function uses {@code null} as a valid state.
      */
-    @Nullable
     public S getCurrentState()
     {
         return fCurrentState;
@@ -99,9 +99,9 @@ public class FiniteStateMachine<S, I, O>
      *
      * @param pInput    The input symbol.
      *
-     * @return  The result of the output function.
+     * @return  The result of the output function. The returned value may be {@code null} if the
+     *          output function can output {@code null}.
      */
-    @Nullable
     public O consumeAndEmit(@Nullable I pInput)
     {
         S aNextState = fNextFunction.apply(fCurrentState, pInput);

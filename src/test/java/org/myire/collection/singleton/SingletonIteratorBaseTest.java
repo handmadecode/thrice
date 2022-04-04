@@ -1,9 +1,9 @@
 /*
- * Copyright 2021 Peter Franzen. All rights reserved.
+ * Copyright 2021-2022 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.myire.collection;
+package org.myire.collection.singleton;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -11,23 +11,39 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import static org.myire.collection.Iterators.singletonIterator;
+import static org.myire.collection.CollectionTests.createMockConsumer;
 
 
 /**
- * Unit tests for the {@code Iterator} implementation returned by
- * {@link Iterators#singletonIterator(Object)}.
+ * Base class for unit tests of {@code Iterator} implementations that are a specialization for a
+ * single element.
+ *
+ * @param <T>   The element type used in the tests.
  */
-public class SingletonIteratorTest
+abstract class SingletonIteratorBaseTest<T>
 {
+    /**
+     * Create a random {@code T} instance.
+     *
+     * @return  A new {@code T} instance.
+     */
+    abstract protected T randomElement();
+
+    /**
+     * Create an instance of the {@code Iterator} to test.
+     *
+     * @param pElement The single element to return from the iteration.
+     *
+     * @return  A new {@code Iterator}.
+     */
+    abstract protected Iterator<T> createIterator(T pElement);
+
+
     /**
      * The {@code hasNext} method should return true after the iterator has been created.
      */
@@ -35,7 +51,7 @@ public class SingletonIteratorTest
     public void hasNextReturnsTrueForNewIterator()
     {
         // Given
-        Iterator<String> aIterator = singletonIterator("");
+        Iterator<T> aIterator = createIterator(randomElement());
 
         // Then
         assertTrue(aIterator.hasNext());
@@ -50,28 +66,13 @@ public class SingletonIteratorTest
     public void hasNextReturnsFalseAfterCallToNext()
     {
         // Given
-        Iterator<String> aIterator = singletonIterator("");
+        Iterator<T> aIterator = createIterator(randomElement());
 
         // When
         aIterator.next();
 
         // Then
         assertFalse(aIterator.hasNext());
-    }
-
-
-    /**
-     * The {@code next} method should return the element passed to the constructor.
-     */
-    @Test
-    public void nextReturnsTheExpectedElement()
-    {
-        // Given
-        String aString = "sole element";
-        Iterator<String> aIterator = singletonIterator(aString);
-
-        // Then
-        assertSame(aString, aIterator.next());
     }
 
 
@@ -83,7 +84,7 @@ public class SingletonIteratorTest
     public void nextThrowsAfterReturningTheElement()
     {
         // Given
-        Iterator<String> aIterator = singletonIterator("");
+        Iterator<T> aIterator = createIterator(randomElement());
 
         // When
         aIterator.next();
@@ -104,7 +105,7 @@ public class SingletonIteratorTest
     public void removeThrowsAtStartOfIteration()
     {
         // Given
-        Iterator<String> aIterator = singletonIterator("");
+        Iterator<T> aIterator = createIterator(randomElement());
 
         // Then
         assertThrows(
@@ -122,7 +123,7 @@ public class SingletonIteratorTest
     public void removeThrowsAtEndOfIteration()
     {
         // Given
-        Iterator<String> aIterator = singletonIterator("");
+        Iterator<T> aIterator = createIterator(randomElement());
 
         // When
         aIterator.next();
@@ -136,36 +137,15 @@ public class SingletonIteratorTest
 
 
     /**
-     * The {@code forEachRemaining} method should pass the element to the specified action if
-     * {@code next} hasn't been called.
-     */
-    @Test
-    public void forEachRemainingProcessesTheElement()
-    {
-        // Given
-        String aString = "xyz";
-        Consumer<String> aAction = mock(IteratorBaseTest.StringConsumer.class);
-        Iterator<String> aIterator = singletonIterator(aString);
-
-        // When
-        aIterator.forEachRemaining(aAction);
-
-        // Then
-        verify(aAction).accept(aString);
-        verifyNoMoreInteractions(aAction);
-    }
-
-
-    /**
      * The {@code forEachRemaining} method should not invoke the specified action if the element has
      * been returned by the iteration.
      */
     @Test
-    public void forEachRemainingDoesNothingForEmptyIterable()
+    public void forEachRemainingDoesNothingWhenElementHasBeenReturned()
     {
         // Given
-        Iterator<String> aIterator = singletonIterator("");
-        Consumer<String> aAction = mock(IteratorBaseTest.StringConsumer.class);
+        Consumer<T> aAction = createMockConsumer();
+        Iterator<T> aIterator = createIterator(randomElement());
 
         // When
         aIterator.next();

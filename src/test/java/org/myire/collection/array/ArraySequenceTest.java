@@ -1,31 +1,28 @@
 /*
- * Copyright 2013, 2015, 2017, 2020, 2021 Peter Franzen. All rights reserved.
+ * Copyright 2013, 2015, 2017, 2020-2022 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.myire.collection;
+package org.myire.collection.array;
+
+import org.myire.collection.Sequence;
+import org.myire.collection.Sequences;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.myire.collection.ReferenceSequenceBaseTest;
+
 
 /**
  * Unit tests for the {@code Sequence} implementation returned by {@link Sequences#wrap(Object[])}.
  */
-public class ArraySequenceTest extends SequenceBaseTest
+public class ArraySequenceTest extends ReferenceSequenceBaseTest
 {
     @Override
-    @SuppressWarnings("unchecked")
-    protected <T> Sequence<T> createEmptySequence()
-    {
-        return Sequences.wrap((T[]) new Object[0]);
-    }
-
-
-    @Override
-    protected <T> Sequence<T> createSequence(T[] pElements)
+    protected Sequence<Object> createSequence(Object[] pElements)
     {
         return Sequences.wrap(pElements);
     }

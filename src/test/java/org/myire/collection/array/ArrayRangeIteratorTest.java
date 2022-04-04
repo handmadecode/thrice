@@ -1,32 +1,36 @@
 /*
- * Copyright 2021 Peter Franzen. All rights reserved.
+ * Copyright 2021-2022 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.myire.collection;
+package org.myire.collection.array;
 
 import java.util.Iterator;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static org.myire.collection.Iterators.arrayIterator;
+
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import static org.myire.collection.Iterators.arrayIterator;
+import org.myire.collection.ReferenceIteratorBaseTest;
 
 
 /**
  * Unit tests for the {@code Iterator} implementation returned by
- * {@link Iterators#arrayIterator(Object[], int, int)}.
+ * {@link org.myire.collection.Iterators#arrayIterator(Object[], int, int)}.
  */
-public class ArrayRangeIteratorTest extends IteratorBaseTest
+public class ArrayRangeIteratorTest extends ReferenceIteratorBaseTest
 {
     @Override
-    protected <T> Iterator<T> createIterator(T[] pElements)
+    protected Iterator<Object> createIterator(Object[] pElements)
     {
+        if (pElements.length == 0)
+            return arrayIterator(new Object[17], 8, 0);
+
         // Create an array twice the length of the elements to iterate over and put the elements at
-        //  a random range in that array.
-        @SuppressWarnings("unchecked")
-        T[] aArray = (T[]) new Object[pElements.length * 2];
+        // a random range in that array.
+        Object[] aArray = new Object[pElements.length * 2];
         int aOffset = ThreadLocalRandom.current().nextInt(pElements.length + 1);
         System.arraycopy(pElements, 0, aArray, aOffset, pElements.length);
         return arrayIterator(aArray, aOffset, pElements.length);
