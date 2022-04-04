@@ -52,6 +52,7 @@ public interface TimeSource
      */
     class CurrentMillisTimeSource implements TimeSource
     {
+        /** Reusable instance. */
         static public final TimeSource INSTANCE = new CurrentMillisTimeSource();
 
         @Override
