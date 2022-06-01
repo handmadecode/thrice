@@ -36,6 +36,7 @@ public final class Numbers
     };
 
     // The digit in the ones position for values 0-99.
+    @SuppressWarnings("CPD-START")
     static private final char[] DIGIT_ONES =
     {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',

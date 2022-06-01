@@ -15,6 +15,10 @@ occasions.
 
 ## Release Notes
 
+### version 3.6
+* `ByteArrayBuilder`, `ByteArrayConsumer`, and `ByteArrayFunction` added to `util` package.
+* `DevNullOutputStream` and `PassThroughOutputStream` added to new `io` package.
+
 ### version 3.5
 * Primitive specializations of `Sequence` added.
 * `PrimitiveIterators` factory class for `java.util.PrimitiveIterator` implementations added.
