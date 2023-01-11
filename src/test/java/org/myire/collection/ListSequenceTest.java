@@ -8,7 +8,9 @@ package org.myire.collection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -62,6 +64,17 @@ public class ListSequenceTest extends ReferenceSequenceBaseTest
 
 
     /**
+     * A sequence wrapping a list should contain elements added to the list after wrapping it.
+     */
+    @Test
+    public void sequenceContainsElementsAddedToWrappedList()
+    {
+        testAddedListElements(new ArrayList<>(), this::randomElement);
+        testAddedListElements(new LinkedList<>(Arrays.asList(new Object(), new Object())), this::randomElement);
+    }
+
+
+    /**
      * A sequence wrapping a list should contain the same elements in the same order as stored in
      * the list.
      *
@@ -71,6 +84,40 @@ public class ListSequenceTest extends ReferenceSequenceBaseTest
     {
         // When
         Sequence<T> aSeq = Sequences.wrap(pList);
+
+        // Then
+        assertEquals(pList.size(), aSeq.size());
+        for (int i=0; i<pList.size(); i++)
+            assertSame(pList.get(i), aSeq.elementAt(i));
+    }
+
+
+    /**
+     * A sequence wrapping a modifiable list should return elements added to the list after wrapping
+     * the list.
+     *
+     * @param pList The list to test.
+     */
+    static private <T> void testAddedListElements(List<T> pList, Supplier<T> pElementGenerator)
+    {
+        // When
+        Sequence<T> aSeq = Sequences.wrap(pList);
+
+        // Then
+        assertEquals(pList.size(), aSeq.size());
+        for (int i=0; i<pList.size(); i++)
+            assertSame(pList.get(i), aSeq.elementAt(i));
+
+        // When
+        pList.add(pElementGenerator.get());
+
+        // Then
+        assertEquals(pList.size(), aSeq.size());
+        for (int i=0; i<pList.size(); i++)
+            assertSame(pList.get(i), aSeq.elementAt(i));
+
+        // When
+        pList.add(pElementGenerator.get());
 
         // Then
         assertEquals(pList.size(), aSeq.size());
