@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, 2015, 2017, 2020-2022 Peter Franzen. All rights reserved.
+ * Copyright 2013, 2015, 2017, 2020-2023 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -58,8 +58,7 @@ public class ListSequenceTest extends ReferenceSequenceBaseTest
         testWrappedListElements(Collections.emptyList());
         testWrappedListElements(new ArrayList<>());
         testWrappedListElements(Collections.singletonList(new Object()));
-        testWrappedListElements(Arrays.asList(new Object(), new Object(), new Object(), new Object()));
-        testWrappedListElements(Arrays.asList(randomElementArray(randomCollectionLength())));
+        testWrappedListElements(randomElementList());
     }
 
 
@@ -70,7 +69,38 @@ public class ListSequenceTest extends ReferenceSequenceBaseTest
     public void sequenceContainsElementsAddedToWrappedList()
     {
         testAddedListElements(new ArrayList<>(), this::randomElement);
-        testAddedListElements(new LinkedList<>(Arrays.asList(new Object(), new Object())), this::randomElement);
+        testAddedListElements(new ArrayList<>(Collections.singletonList(new Object())), this::randomElement);
+        testAddedListElements(new LinkedList<>(randomElementList()), this::randomElement);
+    }
+
+
+    /**
+     * A sequence should be able to wrap a list whose elements are of a subtype of the sequence's
+     * elements.
+     */
+    @Test
+    public void sequenceCanWrapListWithSubTypeElements()
+    {
+        // Given
+        List<String> aList = Arrays.asList("A", "B", "C", "D");
+
+        // When
+        Sequence<CharSequence> aSequence = Sequences.wrap(aList);
+
+        // Then
+        for (int i=0; i<aSequence.size(); i++)
+            assertSame(aList.get(i), aSequence.elementAt(i));
+    }
+
+
+    /**
+     * Create a list of random elements.
+     *
+     * @return  An array with a random number of random elements.
+     */
+    private List<Object> randomElementList()
+    {
+        return Arrays.asList(randomElementArray(randomCollectionLength()));
     }
 
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2009, 2016-2017, 2020-2022 Peter Franzen. All rights reserved.
+ * Copyright 2009, 2016-2017, 2020-2023 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -7,10 +7,13 @@ package org.myire.collection;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 import static org.myire.collection.Iterators.unmodifiableIterator;
 
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
@@ -40,5 +43,26 @@ public class UnmodifiableIteratorTest extends ReferenceIteratorBaseTest
             () ->
                 unmodifiableIterator(null)
         );
+    }
+
+
+    /**
+     * {@link Iterators#unmodifiableIterator(Iterator)} should be able to wrap an iterator whose
+     * elements are of a subtype of the unmodifiable iterator's elements.
+     */
+    @Test
+    public void iteratorCanWrapIteratorOfSubType()
+    {
+        // Given
+        List<String> aList = Arrays.asList("A", "B", "C", "D");
+
+        // When
+        Iterator<CharSequence> aIterator = unmodifiableIterator(aList.iterator());
+
+        // Then
+        for (String aElement : aList)
+            assertSame(aElement, aIterator.next());
+
+        assertFalse(aIterator.hasNext());
     }
 }
