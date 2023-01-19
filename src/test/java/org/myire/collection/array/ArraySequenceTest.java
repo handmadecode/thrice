@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, 2015, 2017, 2020-2022 Peter Franzen. All rights reserved.
+ * Copyright 2013, 2015, 2017, 2020-2023 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -22,7 +22,7 @@ import org.myire.collection.ReferenceSequenceBaseTest;
 public class ArraySequenceTest extends ReferenceSequenceBaseTest
 {
     @Override
-    protected Sequence<Object> createSequence(Object[] pElements)
+    protected Sequence<String> createSequence(String[] pElements)
     {
         return Sequences.wrap(pElements);
     }

@@ -1,11 +1,12 @@
 /*
- * Copyright 2013, 2015, 2017, 2020-2022 Peter Franzen. All rights reserved.
+ * Copyright 2013, 2015, 2017, 2020-2023 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.myire.collection;
 
 import java.util.Iterator;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
@@ -21,19 +22,23 @@ import static org.myire.collection.CollectionTests.createMockConsumer;
 /**
  * Base test class for non-primitive {@code Sequence} implementations.
  */
-abstract public class ReferenceSequenceBaseTest extends SequenceBaseTest<Object>
+abstract public class ReferenceSequenceBaseTest extends SequenceBaseTest<String>
 {
     @Override
-    protected Object randomElement()
+    protected String randomElement()
     {
-        return new Object();
+        char[] aChars = new char[ThreadLocalRandom.current().nextInt(1, 64)];
+        for (int i=0; i<aChars.length; i++)
+            aChars[i] = (char) ThreadLocalRandom.current().nextInt('a', 'z' + 1);
+
+        return new String(aChars);
     }
 
 
     @Override
-    protected Object[] newArray(int pLength)
+    protected String[] newArray(int pLength)
     {
-        return new Object[pLength];
+        return new String[pLength];
     }
 
 
@@ -47,10 +52,10 @@ abstract public class ReferenceSequenceBaseTest extends SequenceBaseTest<Object>
         for (int aElementCount : aElementCounts)
         {
             // Given
-            Object[] aElements = randomElementArray(aElementCount);
+            String[] aElements = randomElementArray(aElementCount);
 
             // When
-            Sequence<Object> aSequence = createSequence(aElements);
+            Sequence<String> aSequence = createSequence(aElements);
 
             // Then (the sequence should return the instance from the underlying collection)
             for (int i=0; i<aElements.length; i++)
@@ -70,15 +75,15 @@ abstract public class ReferenceSequenceBaseTest extends SequenceBaseTest<Object>
         for (int aElementCount : aElementCounts)
         {
             // Given
-            Object[] aElements = randomElementArray(aElementCount);
-            Consumer<Object> aConsumer = createMockConsumer();
+            String[] aElements = randomElementArray(aElementCount);
+            Consumer<String> aConsumer = createMockConsumer();
 
             // When
             createSequence(aElements).forEach(aConsumer);
 
             // Then (the sequence should pass the instance from the underlying collection to the
             // consumer)
-            for (Object aElement : aElements)
+            for (String aElement : aElements)
                 verify(aConsumer).accept(same(aElement));
 
             verifyNoMoreInteractions(aConsumer);
@@ -97,15 +102,34 @@ abstract public class ReferenceSequenceBaseTest extends SequenceBaseTest<Object>
         for (int aElementCount : aElementCounts)
         {
             // Given
-            Object[] aElements = randomElementArray(aElementCount);
-            Sequence<Object> aSequence = createSequence(aElements);
+            String[] aElements = randomElementArray(aElementCount);
+            Sequence<String> aSequence = createSequence(aElements);
 
             // When
-            Iterator<Object> aIterator = aSequence.iterator();
+            Iterator<String> aIterator = aSequence.iterator();
 
             // Then
             for (int i=0; i<aSequence.size(); i++)
                 assertSame(aSequence.elementAt(i), aIterator.next());
         }
+    }
+
+
+    /**
+     * It should be possible to cast a sequence to a sequence of a supertype of its elements.
+     */
+    @Test
+    public void sequenceCanBeUpCast()
+    {
+        // Given
+        Sequence<String> aSequence = createSequence(randomCollectionLength());
+
+        // When
+        Sequence<CharSequence> aNarrowedSequence = Sequences.upCast(aSequence);
+
+        // Then
+        Iterator<CharSequence> aIterator = aNarrowedSequence.iterator();
+        for (int i=0; i<aSequence.size(); i++)
+            assertSame(aSequence.elementAt(i), aIterator.next());
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Peter Franzen. All rights reserved.
+ * Copyright 2022-2023 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -94,5 +94,24 @@ abstract public class PrimitiveSequenceBaseTest<T extends Number> extends Sequen
             for (int i=0; i<aSequence.size(); i++)
                 assertEquals(aSequence.elementAt(i), aIterator.next());
         }
+    }
+
+
+    /**
+     * It should be possible to cast a sequence to a sequence of a supertype of its elements.
+     */
+    @Test
+    public void sequenceCanBeUpCast()
+    {
+        // Given
+        Sequence<T> aSequence = createSequence(randomCollectionLength());
+
+        // When
+        Sequence<Number> aNarrowedSequence = Sequences.upCast(aSequence);
+
+        // Then
+        Iterator<Number> aIterator = aNarrowedSequence.iterator();
+        for (int i=0; i<aSequence.size(); i++)
+            assertEquals(aSequence.elementAt(i), aIterator.next());
     }
 }

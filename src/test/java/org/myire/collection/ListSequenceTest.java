@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class ListSequenceTest extends ReferenceSequenceBaseTest
 {
     @Override
-    protected Sequence<Object> createSequence(Object[] pElements)
+    protected Sequence<String> createSequence(String[] pElements)
     {
         return Sequences.wrap(Arrays.asList(pElements));
     }
@@ -98,7 +98,7 @@ public class ListSequenceTest extends ReferenceSequenceBaseTest
      *
      * @return  An array with a random number of random elements.
      */
-    private List<Object> randomElementList()
+    private List<String> randomElementList()
     {
         return Arrays.asList(randomElementArray(randomCollectionLength()));
     }

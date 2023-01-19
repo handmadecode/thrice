@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, 2017, 2021-2022 Peter Franzen. All rights reserved.
+ * Copyright 2013, 2017, 2021-2023 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -137,6 +137,45 @@ public final class Sequences
             return singleton(pElements[pOffset]);
         else
             return new ArraySequence<>(pElements, pOffset, pLength);
+    }
+
+
+    /**
+     * Cast a sequence to a sequence of a supertype of its elements.
+     *<p>
+     * The main use case for this is a sequence with a non-public element type that should be
+     * exposed as a sequence of a public element type, where the public type is a supertype of the
+     * non-public type.
+     *<p>
+     * An example:
+     *<pre>
+     * public interface X {...}         // public type
+     * class XImpl implements X {...}   // non-public type
+     *
+     * public class Example
+     * {
+     *   private Sequence&lt;XImpl&gt; xs;
+     *
+     *   public Sequence&lt;X&gt; getXs()
+     *   {
+     *     return Sequences.upCast(xs);
+     *   }
+     * }
+     *</pre>
+     *<p>
+     * Note that this type of cast is not safe for mutable collections, since it would allow adding
+     * elements of another subtype to the collection. Since sequences do not expose any methods for
+     * mutating their contents, this kind of upcast can be allowed.
+     *
+     * @param pSequence The sequence to cast.
+     * @param <T>   The element type of the cast sequence.
+     *
+     * @return  {@code pSequence} cast to a {@code Sequence<T>}.
+     */
+    @SuppressWarnings("unchecked")
+    static public <T> Sequence<T> upCast(@Nullable Sequence<? extends T> pSequence)
+    {
+        return (Sequence<T>) pSequence;
     }
 
 
