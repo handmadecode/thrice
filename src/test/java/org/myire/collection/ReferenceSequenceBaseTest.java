@@ -60,7 +60,6 @@ abstract public class ReferenceSequenceBaseTest extends SequenceBaseTest<String>
             // Then (the sequence should return the instance from the underlying collection)
             for (int i=0; i<aElements.length; i++)
                 assertSame(aElements[i], aSequence.elementAt(i));
-
         }
     }
 
@@ -125,10 +124,10 @@ abstract public class ReferenceSequenceBaseTest extends SequenceBaseTest<String>
         Sequence<String> aSequence = createSequence(randomCollectionLength());
 
         // When
-        Sequence<CharSequence> aNarrowedSequence = Sequences.upCast(aSequence);
+        Sequence<CharSequence> aUpCastSequence = Sequences.upCast(aSequence);
 
         // Then
-        Iterator<CharSequence> aIterator = aNarrowedSequence.iterator();
+        Iterator<CharSequence> aIterator = aUpCastSequence.iterator();
         for (int i=0; i<aSequence.size(); i++)
             assertSame(aSequence.elementAt(i), aIterator.next());
     }
