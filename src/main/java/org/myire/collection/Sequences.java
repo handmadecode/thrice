@@ -8,6 +8,7 @@ package org.myire.collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import static java.util.Objects.requireNonNull;
 
@@ -137,6 +138,50 @@ public final class Sequences
             return singleton(pElements[pOffset]);
         else
             return new ArraySequence<>(pElements, pOffset, pLength);
+    }
+
+
+    /**
+     * Check if two {@code Sequence} instances are equal. Two sequences are equal if the have the
+     * same size and contain equal elements in the same order. The equality of the elements are
+     * tested with the specified predicate.
+     *
+     * @param pFirst        The first instance to check.
+     * @param pSecond       The second instance to check.
+     * @param pPredicate    A predicate to test element equality with.
+     *
+     * @param <E> The type used to test the elements for equality.
+     *
+     * @return  True if the two instances are equal or if both are null. False otherwise.
+     *
+     * @throws NullPointerException if {@code pPredicate} is null.
+     */
+    static public <E> boolean areEqual(
+        @Nullable Sequence<? extends E> pFirst,
+        @Nullable Sequence<? extends E> pSecond,
+        @Nonnull BiPredicate<E, E> pPredicate)
+    {
+        // The two instances are equal if they are the same instance or both are null.
+        if (pFirst == pSecond)
+            return true;
+
+        // If one of the instances is null but the other isn't they are not equal. Both cannot be
+        // null here (that would have been caught above).
+        if (pFirst == null || pSecond == null)
+            return false;
+
+        // Both instances are non-null, check their sizes.
+        int aNumElements = pFirst.size();
+        if (pSecond.size() != aNumElements)
+            return false;
+
+        // Equal sizes, compare the elements.
+        for (int i=0; i<aNumElements; i++)
+            if (!pPredicate.test(pFirst.elementAt(i), pSecond.elementAt(i)))
+                // Elements differ at this position.
+                return false;
+
+        return true;
     }
 
 
