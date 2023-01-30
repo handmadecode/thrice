@@ -15,6 +15,10 @@ occasions.
 
 ## Release Notes
 
+### version 3.7
+* `ArrayListSequence` added to `collection` package.
+* `Sequences.areEqual()` and `Sequences.upCast()` added.
+
 ### version 3.6
 * `ByteArrayBuilder`, `ByteArrayConsumer`, and `ByteArrayFunction` added to `util` package.
 * `DevNullOutputStream` and `PassThroughOutputStream` added to new `io` package.

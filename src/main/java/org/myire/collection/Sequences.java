@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, 2017, 2021-2022 Peter Franzen. All rights reserved.
+ * Copyright 2013, 2017, 2021-2023 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -8,6 +8,7 @@ package org.myire.collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import static java.util.Objects.requireNonNull;
 
@@ -137,6 +138,89 @@ public final class Sequences
             return singleton(pElements[pOffset]);
         else
             return new ArraySequence<>(pElements, pOffset, pLength);
+    }
+
+
+    /**
+     * Check if two {@code Sequence} instances are equal. Two sequences are equal if the have the
+     * same size and contain equal elements in the same order. The equality of the elements are
+     * tested with the specified predicate.
+     *
+     * @param pFirst        The first instance to check.
+     * @param pSecond       The second instance to check.
+     * @param pPredicate    A predicate to test element equality with.
+     *
+     * @param <E> The type used to test the elements for equality.
+     *
+     * @return  True if the two instances are equal or if both are null. False otherwise.
+     *
+     * @throws NullPointerException if {@code pPredicate} is null.
+     */
+    static public <E> boolean areEqual(
+        @Nullable Sequence<? extends E> pFirst,
+        @Nullable Sequence<? extends E> pSecond,
+        @Nonnull BiPredicate<E, E> pPredicate)
+    {
+        // The two instances are equal if they are the same instance or both are null.
+        if (pFirst == pSecond)
+            return true;
+
+        // If one of the instances is null but the other isn't they are not equal. Both cannot be
+        // null here (that would have been caught above).
+        if (pFirst == null || pSecond == null)
+            return false;
+
+        // Both instances are non-null, check their sizes.
+        int aNumElements = pFirst.size();
+        if (pSecond.size() != aNumElements)
+            return false;
+
+        // Equal sizes, compare the elements.
+        for (int i=0; i<aNumElements; i++)
+            if (!pPredicate.test(pFirst.elementAt(i), pSecond.elementAt(i)))
+                // Elements differ at this position.
+                return false;
+
+        return true;
+    }
+
+
+    /**
+     * Cast a sequence to a sequence of a supertype of its elements.
+     *<p>
+     * The main use case for this is a sequence with a non-public element type that should be
+     * exposed as a sequence of a public element type, where the public type is a supertype of the
+     * non-public type.
+     *<p>
+     * An example:
+     *<pre>
+     * public interface X {...}         // public type
+     * class XImpl implements X {...}   // non-public type
+     *
+     * public class Example
+     * {
+     *   private Sequence&lt;XImpl&gt; xs;
+     *
+     *   public Sequence&lt;X&gt; getXs()
+     *   {
+     *     return Sequences.upCast(xs);
+     *   }
+     * }
+     *</pre>
+     *<p>
+     * Note that this type of cast is not safe for mutable collections, since it would allow adding
+     * elements of another subtype to the collection. Since sequences do not expose any methods for
+     * mutating their contents, this kind of upcast can be allowed.
+     *
+     * @param pSequence The sequence to cast.
+     * @param <T>   The element type of the cast sequence.
+     *
+     * @return  {@code pSequence} cast to a {@code Sequence<T>}.
+     */
+    @SuppressWarnings("unchecked")
+    static public <T> Sequence<T> upCast(@Nullable Sequence<? extends T> pSequence)
+    {
+        return (Sequence<T>) pSequence;
     }
 
 

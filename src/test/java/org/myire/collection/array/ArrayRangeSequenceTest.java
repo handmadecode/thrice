@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 Peter Franzen. All rights reserved.
+ * Copyright 2021-2023 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -23,14 +23,14 @@ import org.myire.collection.ReferenceSequenceBaseTest;
 public class ArrayRangeSequenceTest extends ReferenceSequenceBaseTest
 {
     @Override
-    protected Sequence<Object> createSequence(Object[] pElements)
+    protected Sequence<String> createSequence(String[] pElements)
     {
         if (pElements.length == 0)
-            return Sequences.wrap(new Object[8], 4, 0);
+            return Sequences.wrap(new String[8], 4, 0);
 
         // Create an array twice the length of the elements to wrap over and put the elements at a
         // random range in that array.
-        Object[] aArray = new Object[pElements.length * 2];
+        String[] aArray = new String[pElements.length * 2];
         int aOffset = ThreadLocalRandom.current().nextInt(pElements.length + 1);
         System.arraycopy(pElements, 0, aArray, aOffset, pElements.length);
         return Sequences.wrap(aArray, aOffset, pElements.length);

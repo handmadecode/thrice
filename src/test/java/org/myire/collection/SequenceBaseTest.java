@@ -143,4 +143,30 @@ abstract public class SequenceBaseTest<T> extends CollectionBaseTest<T>
         // Then
         assertFalse(aIterator.hasNext());
     }
+
+
+    /**
+     * A sequence's iterator should not support the remove operation.
+     */
+    @Test
+    public void iteratorDoesNotSupportRemove()
+    {
+        int[] aElementCounts = {1, randomCollectionLength()};
+        for (int aElementCount : aElementCounts)
+        {
+            // Given
+            Sequence<T> aSequence = createSequence(aElementCount);
+
+            // When
+            Iterator<T> aIterator = aSequence.iterator();
+            for (int i = aElementCount-1; i >= 0; i--)
+                aIterator.next();
+
+            // Then
+            assertThrows(
+                UnsupportedOperationException.class,
+                aIterator::remove
+            );
+        }
+    }
 }
