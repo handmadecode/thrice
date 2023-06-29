@@ -23,6 +23,18 @@ import javax.annotation.concurrent.ThreadSafe;
  * not perform any computation to calculate the result; it must be set explicitly by calling
  * {@link #setResult(Object)}.
  *<p>
+ * This class offers a subset of the functionality found in
+ * {@code java.util.concurrent.CompletableFuture}. There a few minor semantic differences which
+ * arise from the fact that the API of this class was conceived before
+ * {@code java.util.concurrent.CompletableFuture} was introduced in the JDK:
+ *<ul>
+ * <li>{@link #cancel(boolean)} returns {@code false} if the {@code FutureResult} already has been
+ *     cancelled. The second call does however not affect the cancelled state of the
+ *     {@code FutureResult}.</li>
+ * <li>{@link #completedExceptionally()} returns true only if the {@code FutureResult} was completed
+ *     with a call to {@link #setException(Throwable)}, not if it was cancelled.</li>
+ *</ul>
+ *<p>
  * Instances of this class are safe for use by multiple threads.
  *
  * @param <T>   The type of the result this future will hold.

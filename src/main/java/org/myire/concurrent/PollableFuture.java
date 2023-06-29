@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Peter Franzen. All rights reserved.
+ * Copyright 2021, 2023 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -12,6 +12,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.BiFunction;
 import static java.util.Objects.requireNonNull;
 
 import javax.annotation.Nonnull;
@@ -55,7 +56,7 @@ public interface PollableFuture<T> extends Future<T>
      */
     static <T> PollableFuture<T> of(Future<T> pDelegate)
     {
-        return new DelegatingPollableFuture<>(pDelegate);
+        return new DelegatingPollableFuture<>(pDelegate, PollableFuture::pollNow);
     }
 
 
@@ -72,7 +73,45 @@ public interface PollableFuture<T> extends Future<T>
      */
     static <T> PollableFuture<T> of(CompletableFuture<T> pDelegate)
     {
-        return new PollableCompletableFuture<>(pDelegate);
+        return new DelegatingPollableFuture<>(pDelegate, CompletableFuture::getNow);
+    }
+
+
+    /**
+     * Poll a {@code Future} and return the value of its {@code get()} method if it is completed,
+     * otherwise returned the specified not completed value.
+     *
+     * @param pFuture               The {@code Future} to poll.
+     * @param pNotCompletedValue    The value to return if {@code pFuture} isn't completed.
+     *
+     * @return  The value returned by {@code pFuture.get()}, or {@code pNotCompletedValue} if
+     *          {@code pFuture} isn't completed.
+     *
+     * @param <T>   The type of value returned by {@code pFuture}.
+     *
+     * @throws CancellationException if {@code pFuture} has been cancelled.
+     * @throws CompletionException if {@code pFuture} completed exceptionally.
+     * @throws NullPointerException if {@code pFuture} is null.
+     */
+    static <T> T pollNow(Future<T> pFuture, T pNotCompletedValue)
+    {
+        if (!pFuture.isDone())
+            return pNotCompletedValue;
+
+        try
+        {
+            return pFuture.get();
+        }
+        catch (ExecutionException e)
+        {
+            throw new CompletionException(e.getCause());
+        }
+        catch (InterruptedException e)
+        {
+            // Restore the interrupt status and return the not completed value.
+            Thread.currentThread().interrupt();
+            return pNotCompletedValue;
+        }
     }
 
 
@@ -80,21 +119,26 @@ public interface PollableFuture<T> extends Future<T>
      * A {@code PollableFuture} that delegates all calls to another {@code Future}.
      *
      * @param <T>   The result type returned by this {@code PollableFuture}.
+     * @param <D>   The delegate's type.
      */
-    class DelegatingPollableFuture<T> implements PollableFuture<T>
+    class DelegatingPollableFuture<T, D extends Future<T>> implements PollableFuture<T>
     {
-        private final Future<T> fDelegate;
+        private final D fDelegate;
+        private final BiFunction<D, T, T> fPollFunction;
 
         /**
          * Create a new {@code DelegatingPollableFuture}.
          *
-         * @param pDelegate The {@code Future} to delegate all calls to.
+         * @param pDelegate     The {@code Future} to delegate all calls to.
+         * @param pPollFunction A function that polls a {@code D} instance, returning the second
+         *                      argument if that {@code Future} is not done yet.
          *
-         * @throws NullPointerException if {@code pDelegate} is null.
+         * @throws NullPointerException if any of the parameters is null.
          */
-        DelegatingPollableFuture(@Nonnull Future<T> pDelegate)
+        DelegatingPollableFuture(@Nonnull D pDelegate, @Nonnull BiFunction<D, T, T> pPollFunction)
         {
             fDelegate = requireNonNull(pDelegate);
+            fPollFunction = requireNonNull(pPollFunction);
         }
 
         @Override
@@ -131,53 +175,7 @@ public interface PollableFuture<T> extends Future<T>
         @Override
         public T getNow(T pNotCompletedValue)
         {
-            if (!isDone())
-                return pNotCompletedValue;
-
-            try
-            {
-                return get();
-            }
-            catch (ExecutionException e)
-            {
-                throw new CompletionException(e.getCause());
-            }
-            catch (InterruptedException e)
-            {
-                // Restore the interrupt status and return the not completed value.
-                Thread.currentThread().interrupt();
-                return pNotCompletedValue;
-            }
-        }
-    }
-
-
-    /**
-     * A {@code PollableFuture} that delegates all calls to a {@code CompletableFuture}.
-     *
-     * @param <T>   The result type returned by this {@code PollableFuture}.
-     */
-    class PollableCompletableFuture<T> extends DelegatingPollableFuture<T>
-    {
-        private final CompletableFuture<T> fDelegate;
-
-        /**
-         * Create a new {@code PollableCompletableFuture}.
-         *
-         * @param pDelegate The {@code CompletableFuture} to delegate all calls to.
-         *
-         * @throws NullPointerException if {@code pDelegate} is null.
-         */
-        PollableCompletableFuture(@Nonnull CompletableFuture<T> pDelegate)
-        {
-            super(pDelegate);
-            fDelegate = pDelegate;
-        }
-
-        @Override
-        public T getNow(T pNotCompletedValue)
-        {
-            return fDelegate.getNow(pNotCompletedValue);
+            return fPollFunction.apply(fDelegate, pNotCompletedValue);
         }
     }
 }
