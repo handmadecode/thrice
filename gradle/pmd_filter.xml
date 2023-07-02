@@ -4,7 +4,7 @@
   <rule-violation-filter lines="165"
                          rules="CompareObjectsWithEquals"
                          files=".*collection/Sequences.java"/>
-  <rule-violation-filter lines="143"
+  <rule-violation-filter lines="107"
                          rules="PreserveStackTrace"
                          files=".*concurrent/PollableFuture.java"/>
   <rule-violation-filter lines="199"

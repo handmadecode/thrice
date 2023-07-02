@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2013, 2016-2017, 2020, 2021 Peter Franzen. All rights reserved.
+ * Copyright 2011, 2013, 2016-2017, 2020, 2021, 2023 Peter Franzen. All rights reserved.
  *
  * Licensed under the Apache License v2.0: http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -7,10 +7,7 @@ package org.myire.concurrent;
 
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -20,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 
 /**
@@ -81,10 +77,10 @@ public class FutureResultTest
 
     /**
      * Calling {@code setResult} should fail when the {@code FutureResult} already has been
-     * canceled.
+     * cancelled.
      */
     @Test
-    public void setResultFailsWhenCanceled()
+    public void setResultFailsWhenCancelled()
     {
         // Given
         FutureResult<String> aResult = new FutureResult<>();
@@ -147,10 +143,10 @@ public class FutureResultTest
 
 
     /**
-     * Calling {@code setException} should fail when the {@code FutureResult} has been canceled.
+     * Calling {@code setException} should fail when the {@code FutureResult} has been cancelled.
      */
     @Test
-    public void setExceptionFailsWhenCanceled()
+    public void setExceptionFailsWhenCancelled()
     {
         // Given
         FutureResult<String> aResult = new FutureResult<>();
@@ -213,10 +209,10 @@ public class FutureResultTest
 
 
     /**
-     * Calling {@code cancel} should fail when the {@code FutureResult} already has been canceled.
+     * Calling {@code cancel} should fail when the {@code FutureResult} already has been cancelled.
      */
     @Test
-    public void cancelFailsWhenCanceled()
+    public void cancelFailsWhenCancelled()
     {
         // Given
         FutureResult<String> aResult = new FutureResult<>();
@@ -351,12 +347,12 @@ public class FutureResultTest
 
     /**
      * The {@code get} method should throw a {@code CancellationException} when the
-     * {@code FutureResult} has been canceled.
+     * {@code FutureResult} has been cancelled.
      *
      * @throws InterruptedException if the test is interrupted.
      */
     @Test
-    public void getThrowsWhenCanceled() throws InterruptedException
+    public void getThrowsWhenCancelled() throws InterruptedException
     {
         // Given
         FutureResult<String> aResult = new FutureResult<>();
@@ -453,12 +449,12 @@ public class FutureResultTest
 
     /**
      * The {@code get(long, TimeUnit} method should throw a {@code CancellationException} when the
-     * {@code FutureResult} has been canceled.
+     * {@code FutureResult} has been cancelled.
      *
      * @throws InterruptedException if the test is interrupted.
      */
     @Test
-    public void timedGetThrowsWhenCanceled() throws InterruptedException
+    public void timedGetThrowsWhenCancelled() throws InterruptedException
     {
         // Given
         FutureResult<String> aResult = new FutureResult<>();
@@ -534,27 +530,23 @@ public class FutureResultTest
         aThread.start();
         aThread.join();
 
-        // When
-        try
-        {
-            aResult.getNow("");
-            fail("getNow() does not throw CompletionException when completed exceptionally");
-        }
-        catch (CompletionException e)
-        {
-            assertSame(aException, e.getCause());
-        }
+        // Then
+        CompletionException aCompletionException =
+            assertThrows(
+                CompletionException.class,
+                () -> aResult.getNow(""));
+        assertSame(aException, aCompletionException.getCause());
     }
 
 
     /**
      * The {@code getNow} method should throw a {@code CancellationException} when the
-     * {@code FutureResult} has been canceled.
+     * {@code FutureResult} has been cancelled.
      *
      * @throws InterruptedException if the test is interrupted.
      */
     @Test
-    public void getNowThrowsWhenCanceled() throws InterruptedException
+    public void getNowThrowsWhenCancelled() throws InterruptedException
     {
         // Given (a FutureResult is cancelled from another thread)
         FutureResult<String> aResult = new FutureResult<>();
@@ -571,7 +563,7 @@ public class FutureResultTest
 
 
     /**
-     * A new {@code FutureResult} should not be completed nor canceled.
+     * A new {@code FutureResult} should not be completed nor cancelled.
      */
     @Test
     public void newInstanceIsNotCompleted()
@@ -589,7 +581,7 @@ public class FutureResultTest
 
 
     /**
-     * A {@code FutureResult} that completed normally should be done but not canceled.
+     * A {@code FutureResult} that completed normally should be done but not cancelled.
      */
     @Test
     public void completedInstanceHasCorrectState()
@@ -610,7 +602,7 @@ public class FutureResultTest
 
 
     /**
-     * A {@code FutureResult} that completed exceptionally should be done but not canceled.
+     * A {@code FutureResult} that completed exceptionally should be done but not cancelled.
      */
     @Test
     public void exceptionallyCompletedInstanceHasCorrectState()
@@ -631,10 +623,10 @@ public class FutureResultTest
 
 
     /**
-     * A {@code FutureResult} that was canceled should be done and canceled.
+     * A {@code FutureResult} that was cancelled should be done and cancelled.
      */
     @Test
-    public void canceledInstanceHasCorrectState()
+    public void cancelledInstanceHasCorrectState()
     {
         // Given
         FutureResult<Object> aResult = new FutureResult<>();
@@ -648,96 +640,5 @@ public class FutureResultTest
             () -> assertFalse(aResult.completedExceptionally()),
             () -> assertTrue(aResult.isCancelled())
         );
-    }
-
-
-    /**
-     * Blocking test action that calls {@code Future.get()}.
-     */
-    static private class FutureGetAction<T> extends BlockingTestAction
-    {
-        private final Future<T> fFuture;
-        private volatile T fResult;
-        private volatile ExecutionException fExecutionException;
-        private volatile CancellationException fCancellationException;
-
-        FutureGetAction(Future<T> pFuture)
-        {
-            fFuture = pFuture;
-        }
-
-        @Override
-        protected void performBlockingCall() throws InterruptedException
-        {
-            try
-            {
-                fResult = performGet(fFuture);
-            }
-            catch (ExecutionException e)
-            {
-                fExecutionException = e;
-            }
-            catch (CancellationException e)
-            {
-                fCancellationException = e;
-            }
-        }
-
-        protected T performGet(Future<T> pFuture) throws ExecutionException, InterruptedException
-        {
-            return pFuture.get();
-        }
-
-        T getResult()
-        {
-            return fResult;
-        }
-
-        ExecutionException getExecutionException()
-        {
-            return fExecutionException;
-        }
-
-        CancellationException getCancellationException()
-        {
-            return fCancellationException;
-        }
-    }
-
-
-    /**
-     * Blocking test action that calls {@code Future.get(long, TimeUnit)}.
-     */
-    static private class TimedFutureGetAction<T> extends FutureGetAction<T>
-    {
-        private final long fTimeout;
-        private final TimeUnit fUnit;
-        private volatile TimeoutException fTimeoutException;
-
-        TimedFutureGetAction(Future<T> pFuture, long pTimeout, TimeUnit pUnit)
-        {
-            super(pFuture);
-            fTimeout = pTimeout;
-            fUnit = pUnit;
-        }
-
-        @Override
-        protected T performGet(Future<T> pFuture) throws ExecutionException, InterruptedException
-        {
-            try
-            {
-                return pFuture.get(fTimeout, fUnit);
-            }
-            catch (TimeoutException e)
-            {
-                fTimeoutException = e;
-                return null;
-            }
-        }
-
-        TimeoutException getTimeoutException()
-        {
-            return fTimeoutException;
-        }
     }
 }
