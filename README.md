@@ -15,6 +15,12 @@ occasions.
 
 ## Release Notes
 
+### version 3.8
+* `PollableFuture::pollNow`  added.
+* `PollableCompletableFuture` extracted from `PollableFuture`, is now a subclass of
+  `CompletableFuture`.
+* `PollableFuture::DelegatingPollableFuture` refactored.
+
 ### version 3.7
 * `ArrayListSequence` added to `collection` package.
 * `Sequences.areEqual()` and `Sequences.upCast()` added.
