@@ -15,8 +15,12 @@ occasions.
 
 ## Release Notes
 
+### version 3.9
+* `Bytes` and `Durations` added to `util` package.
+* Package `org.myire.io` is now exported in `module-info.java`.
+
 ### version 3.8
-* `PollableFuture::pollNow`  added.
+* `PollableFuture::pollNow` added.
 * `PollableCompletableFuture` extracted from `PollableFuture`, is now a subclass of
   `CompletableFuture`.
 * `PollableFuture::DelegatingPollableFuture` refactored.

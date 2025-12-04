@@ -3,16 +3,18 @@
  */
 plugins
 {
-    id 'com.github.spotbugs' version '4.8.0'
-    id "org.myire.quill.core" version "3.2"
-    id "org.myire.quill.moduleinfo" version "3.2"
-    id "org.myire.quill.jol" version "3.2"
+    id 'com.github.spotbugs' version '6.4.2'
+    id "org.myire.quill.core" version "3.3"
+    id "org.myire.quill.moduleinfo" version "3.3"
+    id "org.myire.quill.jol" version "3.3"
 }
 
 // Build for compatibility with Java 8
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
-
+java
+{
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+}
 
 // Load project meta data and version from the files in the meta data directory, and set the
 // project's group and version from the loaded values.
@@ -29,7 +31,7 @@ repositories.mavenCentral()
 
 
 // Configure all Jar tasks to add a build info section to the manifest.
-tasks.withType(Jar)
+tasks.withType(Jar).configureEach
 {
     manifest.addBuildInfoSection()
 }

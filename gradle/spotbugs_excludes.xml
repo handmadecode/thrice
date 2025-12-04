@@ -3,4 +3,8 @@
     <BugCode name="ES" />
     <Method name="equalsIgnoreCaseOrBothNull"/>
   </Match>
+  <Match>
+    <!-- Constructors may throw RTE -->
+    <BugCode name="CT" />
+  </Match>
 </FindBugsFilter>
