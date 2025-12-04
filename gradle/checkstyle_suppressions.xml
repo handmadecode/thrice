@@ -6,6 +6,10 @@
 
 <suppressions>
     <suppress
+        checks="ParenPadCheck"
+        files="Bytes.java"
+        lines="53"/>
+    <suppress
         checks="CyclomaticComplexityCheck"
         files="Durations.java"
         lines="81"/>
