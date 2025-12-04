@@ -5,4 +5,12 @@
     "http://www.puppycrawl.com/dtds/suppressions_1_0.dtd">
 
 <suppressions>
+    <suppress
+        checks="CyclomaticComplexityCheck"
+        files="Durations.java"
+        lines="81"/>
+    <suppress
+        checks="LeftCurlyCheck"
+        files="Durations.java"
+        lines="359"/>
 </suppressions>

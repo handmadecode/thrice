@@ -7,6 +7,9 @@
   <rule-violation-filter lines="107"
                          rules="PreserveStackTrace"
                          files=".*concurrent/PollableFuture.java"/>
+  <rule-violation-filter lines="82-224"
+                         rules="(NcssCount|CyclomaticComplexity)"
+                         files=".*util/Durations.java"/>
   <rule-violation-filter lines="199"
                          rules="(CompareObjectsWithEquals|UseEqualsToCompareStrings)"
                          files=".*util/Strings.java"/>
